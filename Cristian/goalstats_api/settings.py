@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'users_auth',
+    'corsheaders',
+
 ]
 
 REST_FRAMEWORK = {
@@ -61,6 +63,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'goalstats_api.urls'
@@ -87,14 +91,25 @@ WSGI_APPLICATION = 'goalstats_api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'bgdeyfk0vexw223r9cmn',
+        'USER': 'usfgwtgqwl84nt29',
+        'PASSWORD': 'vDgTnwEGH19Py1NNRklC',
+        'HOST': 'bgdeyfk0vexw223r9cmn-mysql.services.clever-cloud.com',  # Ruta al archivo socket Unix
+        'OPTIONS': {
+        },
+        'PORT':'3306'
     }
 }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -135,3 +150,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CORS Fixed
+CORS_ORIGIN_ALLOW_ALL = True
+CSRF_TRUSTED_ORIGINS = [
+        'http://127.0.0.1:3000',
+    ]
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:3000',
+]
