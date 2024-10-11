@@ -9,7 +9,8 @@ module.exports = defineConfig({
     https: {
       key: fs.readFileSync(path.resolve(__dirname, 'localhost.key')),
       cert: fs.readFileSync(path.resolve(__dirname, 'localhost.crt')),
-    },       
+    },
+    proxy: 'https://goalstats-api.onrender.com'       
   },
   transpileDependencies: true,
   configureWebpack: {
