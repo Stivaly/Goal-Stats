@@ -20,6 +20,12 @@ export default {
 </script>
 
 <style>
+@font-face {
+  font-family: 'BudokanRounded';
+  src: url('@/assets/fonts/BudokanRounded-Bold.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
