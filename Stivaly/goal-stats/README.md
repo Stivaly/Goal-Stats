@@ -1,4 +1,4 @@
-# goal-stats-frontend
+# goal-stats
 
 ## Project setup
 ```

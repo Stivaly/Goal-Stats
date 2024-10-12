@@ -1,8 +1,7 @@
 <template>
   <div>
     <nav v-if="showNav">
-      <router-link to="/login">Login</router-link> |
-      <router-link to="/register">Register</router-link>
+      <router-link to="/Dashboard">Dashboard</router-link>
     </nav>
     <router-view/>
   </div>

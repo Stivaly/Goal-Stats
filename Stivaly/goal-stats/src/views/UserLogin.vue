@@ -17,5 +17,5 @@
   </script>
   
   <style scoped>
-  /* Estilos específicos del Login (si es necesario) */
+
   </style>

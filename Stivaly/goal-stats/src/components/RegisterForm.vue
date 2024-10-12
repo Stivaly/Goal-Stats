@@ -14,26 +14,27 @@
             <form @submit.prevent="submitForm">
               <div class="form-group">
                 <label for="username">Username</label>
-                <input v-model="form.username" type="text" name="username" id="username" class="form-control" placeholder="Username">
+                <input v-model="form.username" type="text" name="username" id="username" class="input-field" placeholder="Username">
               </div>
               <div class="form-group">
                 <label for="email">Email</label>
-                <input v-model="form.email" type="email" name="email" id="email" class="form-control" placeholder="email@example.com">
+                <input v-model="form.email" type="email" name="email" id="email" class="input-field" placeholder="email@example.com">
+              </div>
+              <div class="form-group mb-4">
+                <label for="password">Contraseña</label>
+                <input v-model="form.password" type="password" name="password" id="password" class="input-field" placeholder="contraseña">
               </div>
               <div class="form-group">
                 <label for="role">Escoja su rol</label>
                 <select v-model="form.role" name="role" id="role" class="form-control">
-                  <option value="coach">Entrenador</option>
-                  <option value="player">Deportista</option>
+                  <option v-for="role in roles" :key="role.value" :value="role.value">
+                    {{ role.label }}
+                  </option>
                 </select>
-              </div>
-              <div class="form-group mb-4">
-                <label for="password">Password</label>
-                <input v-model="form.password" type="password" name="password" id="password" class="form-control" placeholder="enter your passsword">
               </div>
               <input name="login" id="login" class="btn btn-block login-btn" type="submit" value="Register">
             </form>
-            <a href="#!" class="forgot-password-link">¿Olvidó su contraseña?</a>
+            <a href="#!" class="forgot-password-link">¿Ya tiene cuenta? Inicie sesión</a>
           </div>
         </div>
       </div>
@@ -53,6 +54,10 @@
       return {
           logo,
           registerImage,
+          roles: [
+            { value: 'COACH', label: 'Entrenador' },
+            { value: 'PLAYER', label: 'Jugador' },
+          ],
           form: {
             username: '',
             email: '',
@@ -61,8 +66,12 @@
           }
         }
       },
+      mounted() {
+        
+      },
       methods: {
         async submitForm() {
+          console.log(this.form);
           try {
             const response = await axios.post('/register', this.form);
             console.log(response) 
@@ -79,4 +88,34 @@
         }
       }
     }
+
   </script>
+
+  <style scoped>
+    .input-field {
+            width: 100%;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0; /* Borde gris claro */
+            border-radius: 50px; /* Bordes curvos */
+            outline: none;
+            font-size: 16px;
+        }
+
+        .input-field:focus {
+            border-color: #b3b3b3; /* Cambia el borde en foco */
+        }
+
+        .recover-password {
+            display: block;
+            text-align: center;
+            color: #00aaff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .recover-password:hover {
+            text-decoration: underline;
+        }
+  </style>
