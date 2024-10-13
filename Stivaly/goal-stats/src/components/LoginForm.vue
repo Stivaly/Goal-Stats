@@ -18,11 +18,13 @@
             </div>
             <div class="form-group mb-4">
               <label for="password">Contraseña</label>
-              <input v-model="form.password" type="password" name="password" id="password" class="input-field" placeholder="contraseña">
+              <input v-model="form.password" type="password" name="password" id="password" class="input-field" placeholder="Contraseña">
             </div>
+            <span v-if="errorMessage" class="error-message">{{ errorMessage }}</span>
             <input name="login" id="login" class="btn btn-block login-btn" type="submit" value="Register">
           </form>
           <a href="#!" class="forgot-password-link">¿Olvidó su contraseña?</a>
+          <router-link to="/register/" class="forgot-password-link">¿No tienes cuenta? Registrate ahora</router-link>
         </div>
       </div>
     </div>
@@ -45,29 +47,67 @@ export default {
         form: {
           username: '',
           password: '',
-        }
+        },
+        errorMessage: '',
       }
     },
     mounted() {
+      if (!this.isTokenExpired() && localStorage.getItem('authToken')) {
+        console.log('Ya hay un token válido, redirigiendo al dashboard...');
+        this.$router.push('/dashboard/');
+      }
       
     },
     methods: {
       async submitForm() {
         console.log(this.form);
         try {
-          const response = await axios.post('/register', this.form);
+          const response = await axios.post('https://goalstats-api.onrender.com/api/login/', this.form)
+          if (response.status === 200) {
+            // Suponiendo que el token viene en la respuesta
+            const token = response.data.token; 
+            console.log(token)// Ajusta según cómo se devuelve el token en la respuesta
+            const now = new Date();
+            const expirationDate = new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000); // 10 días en milisegundos
+            
+            // Guardar el token y la fecha de expiración en localStorage
+            localStorage.setItem('authToken', token);
+            localStorage.setItem('tokenExpiration', expirationDate.toISOString()); // Almacena la fecha como cadena
+            this.$router.push('/dashboard/'); // Redirige a la página de dashboard o a donde sea necesario
+          };
           console.log(response) 
           console.log(response.data);
-          
-          if (response.status === 200) {
-            alert('Registro exitoso');
-            this.$router.push('/dashboard'); // Redirige a la página de dashboard o a donde sea necesario
-          }
+
         } catch (error) {
           console.error('Error al registrar:', error);
-          alert('Error en el registro, intenta nuevamente.');
-        }
-      }
+          if (error.response) {
+            // Errores HTTP (como 400 o 500)
+            if (error.response.status === 400) {
+              this.errorMessage = 'Datos inválidos. Por favor, Verifica tus credenciales.';
+            } else if (error.response.status === 401) {
+              this.errorMessage = 'No autorizado. Verifica tus credenciales.';
+            } else if (error.response.status === 500) {
+              this.errorMessage = 'Error del servidor. Contacta al administrador del sistema.';
+            } else {
+              this.errorMessage = `Error ${error.response.status}: ${error.response.data.message}`;
+            }
+          } else if (error.request) {
+            // No se recibió respuesta
+            this.errorMessage = 'No se pudo conectar al servidor. Revisa tu conexión de internet.';
+          } else {
+            // Otros errores desconocidos
+            this.errorMessage = 'Ocurrió un error inesperado. Intenta nuevamente más tarde.';
+          };
+        };
+      },
+      isTokenExpired() {
+        const expiration = localStorage.getItem('tokenExpiration');
+        console.log('Fecha de expiración del token:', expiration);
+        if (!expiration) return true;
+
+        const now = new Date();
+        return now > new Date(expiration); // Retorna true si ya expiró
+      },
     }
   }
 

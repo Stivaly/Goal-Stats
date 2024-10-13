@@ -5,22 +5,26 @@ import Dashboard from '@/views/Dashboard.vue'
 
 const routes = [
   {
-    path: '/login',
+    path: '/',
+    redirect: '/register/' // Redirige la raíz al registro
+  },
+  {
+    path: '/login/',
     name: 'Login',
     component: InicioSesion
   },
   {
-    path: '/register',
+    path: '/register/',
     name: 'Register',
     component: Register
   },
   {
-    path: '/dashboard',
+    path: '/dashboard/',
     name: 'Dashboard',
     component: Dashboard
   },
   {
-    path: '/about',
+    path: '/about/',
     name: 'about',
     // route level code-splitting
     // this generates a separate chunk (about.[hash].js) for this route

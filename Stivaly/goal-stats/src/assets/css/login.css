@@ -8,7 +8,7 @@
 body {
   font-family: "BudokanRounded", sans-serif;
   background-color: #fff;
-  min-height: 100vh; }
+  min-height: 100%; }
 
 .brand-wrapper {
   padding-top: 7px;
@@ -24,16 +24,19 @@ body {
   -webkit-box-direction: normal;
           flex-direction: column;
   padding: 20px 100px;
-  background-color: #fff; }
+  background-color: #fff;
+  justify-content: center;
+  height: 100vh;
+  }
   @media (max-width: 991px) {
     .login-section-wrapper {
       padding-left: 50px;
-      padding-right: 50px; } }
+      padding-right: 50px;
+      min-height: 100%; } }
   @media (max-width: 575px) {
     .login-section-wrapper {
       padding-top: 20px;
-      padding-bottom: 20px;
-      min-height: 100vh; } }
+      min-height: 100%; } }
 
 .login-wrapper {
   max-width: 100%;
@@ -68,7 +71,7 @@ body {
     padding: 13px 20px;
     background-color: #3b0066;
     border-radius: 0;
-    font-size: 20px;
+    font-size: 20px 100px;
     font-weight: bold;
     color: #fff;
     margin-bottom: 14px; }
@@ -81,7 +84,7 @@ body {
     font-size: 14px;
     text-decoration: underline;
     display: inline-block;
-    margin-bottom: 54px; }
+ }
     @media (max-width: 575px) {
       .login-wrapper a.forgot-password-link {
         margin-bottom: 16px; } }
@@ -94,11 +97,11 @@ body {
   font-size: 30px;
   color: #000;
   font-weight: bold;
-  margin-bottom: 25px; }
+  }
 
 .login-img {
   width: 100%;
-  height: 110vh;
+  min-height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
   -o-object-position: left;

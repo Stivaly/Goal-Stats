@@ -10,12 +10,6 @@ module.exports = defineConfig({
       key: fs.readFileSync(path.resolve(__dirname, 'localhost.key')),
       cert: fs.readFileSync(path.resolve(__dirname, 'localhost.crt')),
     },
-    proxy: {
-      '/api': {
-        target: 'https://goalstats-api.onrender.com', // Cambia a tu URL de API externa
-        changeOrigin: true, // Cambia el origen de la solicitud a la URL del destino
-      },       
-    },
   },
   transpileDependencies: true,
   configureWebpack: {
@@ -28,7 +22,8 @@ module.exports = defineConfig({
       alias: {
         '@': path.resolve(__dirname, 'src'),  // Define el alias '@' para apuntar a 'src/'
       },
-    },
-  }
+    }, 
+  },
+  publicPath: process.env.NODE_ENV === 'production' ? '/Goal_Stats/' : '/',
 })
 

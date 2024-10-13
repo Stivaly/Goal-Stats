@@ -11,7 +11,7 @@
 export default {
   computed: {
     showNav() {
-      const routesWithNav = ['/dashboard',]; // Lista de rutas donde se muestra el menú
+      const routesWithNav = ['/dashboard/',]; // Lista de rutas donde se muestra el menú
       return routesWithNav.includes(this.$route.path); 
     }
   }

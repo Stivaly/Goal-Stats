@@ -5,36 +5,38 @@
         <div class="col-sm-6 px-0 d-none d-sm-block">
           <img :src="registerImage" alt="login image" class="login-img">
         </div>
-        <div class="col-sm-6 login-section-wrapper">
-          <div class="login-wrapper my-auto">
+        <div class="col-sm-6 login-section-wrapper ">
+          <div class="login-wrapper">
             <div class="brand-wrapper">
               <img :src="logo" alt="logo" class="logo">
             </div>
             <h1 class="login-title">Regístrate</h1>
             <form @submit.prevent="submitForm">
               <div class="form-group">
-                <label for="username">Username</label>
-                <input v-model="form.username" type="text" name="username" id="username" class="input-field" placeholder="Username">
+                <label for="username">Nombre de Usuario<strong class="text-danger"> *</strong></label>
+                <input v-model="form.username" type="text" name="username" id="username" class="input-field" placeholder="Nombre y Apellido" maxlength="30">
+                <span v-if="isLimitReached" class="limit-warning">Has alcanzado el límite de 30 caracteres.</span>
               </div>
               <div class="form-group">
-                <label for="email">Email</label>
+                <label for="email">Correo Electrónico <strong class="text-danger"> *</strong></label>
                 <input v-model="form.email" type="email" name="email" id="email" class="input-field" placeholder="email@example.com">
               </div>
-              <div class="form-group mb-4">
-                <label for="password">Contraseña</label>
-                <input v-model="form.password" type="password" name="password" id="password" class="input-field" placeholder="contraseña">
-              </div>
               <div class="form-group">
-                <label for="role">Escoja su rol</label>
-                <select v-model="form.role" name="role" id="role" class="form-control">
+                <label for="password">Contraseña<strong class="text-danger"> *</strong></label>
+                <input v-model="form.password" type="password" name="password" id="password" class="input-field" placeholder="contraseña" @input="validatePassword">
+                <span v-if="!isPasswordValid" class="text-danger text-center">La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial.</span>
+              </div>
+              <div class="form-group mb-4">
+                <label for="role">Escoja su rol<strong class="text-danger"> *</strong></label>
+                <select v-model="form.role" name="role" id="role" class="input-field" placeholder="Rol">
                   <option v-for="role in roles" :key="role.value" :value="role.value">
                     {{ role.label }}
                   </option>
                 </select>
               </div>
-              <input name="login" id="login" class="btn btn-block login-btn" type="submit" value="Register">
+              <input name="login" id="login" class="btn btn-block login-btn" type="submit" value="Registrarse">
             </form>
-            <a href="#!" class="forgot-password-link">¿Ya tiene cuenta? Inicie sesión</a>
+            <router-link to="/login/" class="forgot-password-link">¿Ya tiene cuenta? Inicie sesión</router-link>
           </div>
         </div>
       </div>
@@ -63,28 +65,45 @@
             email: '',
             password: '',
             role: '',
-          }
+          },
+          isPasswordValid: true,
         }
       },
       mounted() {
         
       },
+      computed: {
+        isLimitReached() {
+          return this.form.username.length >= 30;
+        },
+      },
       methods: {
+        validatePassword() {
+          const password = this.form.password;
+          const hasUpperCase = /[A-Z]/.test(password);
+          const hasLowerCase = /[a-z]/.test(password);
+          const hasNumber = /\d/.test(password);
+          const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+          const isValidLength = password.length >= 8;
+          this.isPasswordValid = hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar && isValidLength;
+        },
         async submitForm() {
           console.log(this.form);
           try {
-            const response = await axios.post('/register', this.form);
+            const response = await axios.post('https://goalstats-api.onrender.com/api/register/', this.form);
             console.log(response) 
             console.log(response.data);
             
-            if (response.status === 200) {
+            if (response.status === 201) {
               alert('Registro exitoso');
-              this.$router.push('/login'); // Redirige a la página de dashboard o a donde sea necesario
+              this.$router.push('/login/'); // Redirige a la página de dashboard o a donde sea necesario
             }
           } catch (error) {
             console.error('Error al registrar:', error);
             alert('Error en el registro, intenta nuevamente.');
-          }
+          };
+          
+
         }
       }
     }
