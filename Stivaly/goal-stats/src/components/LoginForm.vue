@@ -21,7 +21,7 @@
               <input v-model="form.password" type="password" name="password" id="password" class="input-field" placeholder="Contraseña">
             </div>
             <span v-if="errorMessage" class="error-message">{{ errorMessage }}</span>
-            <input name="login" id="login" class="btn btn-block login-btn" type="submit" value="Register">
+            <input name="login" id="login" class="btn btn-block login-btn" type="submit" value="Iniciar Sesión">
           </form>
           <a href="#!" class="forgot-password-link">¿Olvidó su contraseña?</a>
           <router-link to="/register/" class="forgot-password-link">¿No tienes cuenta? Registrate ahora</router-link>

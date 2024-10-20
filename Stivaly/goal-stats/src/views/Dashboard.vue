@@ -6,7 +6,7 @@
   
   <script>
   // Importa el componente que contiene el formulario de Login
-  import DashboardViewAdmin from '@/components/UsersAdmin.vue'
+  import DashboardViewAdmin from '@/components/dashboard/UsersAdmin.vue'
   
   export default {
     name: 'Dashboard',

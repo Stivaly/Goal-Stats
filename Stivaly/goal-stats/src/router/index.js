@@ -6,7 +6,7 @@ import Dashboard from '@/views/Dashboard.vue'
 const routes = [
   {
     path: '/',
-    redirect: '/register/' // Redirige la raíz al registro
+    redirect: '/login/' 
   },
   {
     path: '/login/',
