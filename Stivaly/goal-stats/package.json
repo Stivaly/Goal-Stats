@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "copy-routes": "node scripts/copyRoutes.js",
+    "build": "vue-cli-service build && npm run copy-routes"
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
@@ -15,7 +16,8 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-router": "~5.0.0",
-    "@vue/cli-service": "~5.0.0"
+    "@vue/cli-service": "~5.0.0",
+    "fs-extra": "^11.2.0"
   },
   "browserslist": [
     "> 1%",

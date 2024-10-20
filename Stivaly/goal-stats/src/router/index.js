@@ -1,7 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import InicioSesion from '@/views/UserLogin.vue'
-import Register from '@/views/UserRegister.vue'
-import Dashboard from '@/views/Dashboard.vue'
 
 const routes = [
   {
@@ -11,17 +8,17 @@ const routes = [
   {
     path: '/login/',
     name: 'Login',
-    component: InicioSesion
+    component: () => import(/* webpackChunkName: "login" */ '../views/UserLogin.vue')
   },
   {
     path: '/register/',
     name: 'Register',
-    component: Register
+    component: () => import(/* webpackChunkName: "register" */ '../views/UserRegister.vue')
   },
   {
     path: '/dashboard/',
     name: 'Dashboard',
-    component: Dashboard
+    component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue')
   },
   {
     path: '/about/',
