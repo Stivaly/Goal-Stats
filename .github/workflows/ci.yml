@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main 
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Chequear el código
+      uses: actions/checkout@v2
+
+    - name: Configurar Git
+      run: |
+        git config --global user.name "Stivaly"
+        git config --global user.email "stivaly.g@hotmail.com"
+
+    - name: Cambiar a la carpeta específica y sincronizar
+      run: |
+        cd Stivaly/goal-stats/dist
+        git remote add target_repo https://$TARGET_REPO_TOKEN@github.com/Stivaly/Goal_Stats.git
+        git fetch target_repo
+        git push target_repo main 
+      env:
+          TARGET_REPO_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
