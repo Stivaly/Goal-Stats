@@ -26,6 +26,8 @@ jobs:
         git commit -m "Actualizar archivos frontend deploy"
 
     - name: Verificar el token
+      env:
+        TARGET_REPO_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
       run: |
         if [ -z "$TARGET_REPO_TOKEN" ]; then
           echo "El token no está configurado."
