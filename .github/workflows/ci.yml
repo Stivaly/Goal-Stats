@@ -19,10 +19,11 @@ jobs:
         git config --global user.email "stivaly.g@hotmail.com"
 
     - name: Cambiar a la carpeta específica y sincronizar
+      env:
+        TARGET_REPO_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
       run: |
         cd Stivaly/goal-stats/dist
-        git remote add target_repo https://$TARGET_REPO_TOKEN@github.com/Stivaly/Goal_Stats.git 
+        git remote add target_repo https://x-access-token:${{ secrets.TARGET_REPO_TOKEN }}@github.com/Stivaly/Goal_Stats.git 
         git fetch target_repo
-        git push target_repo main 
-      env:
-          TARGET_REPO_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
+        git push target_repo HEAD:main 
+      
