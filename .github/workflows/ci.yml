@@ -40,6 +40,7 @@ jobs:
       env:
         TARGET_REPO_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
       run: |
-        git remote add target_repo https://x-access-token:${TARGET_REPO_TOKEN}@github.com/Stivaly/Goal_Stats.git 
-        git push target_repo HEAD:main --force
+        git remote remove target_repo
+        git remote add origin https://x-access-token:${TARGET_REPO_TOKEN}@github.com/Stivaly/Goal_Stats.git 
+        git push origin HEAD:main --force
       
