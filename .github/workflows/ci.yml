@@ -23,7 +23,16 @@ jobs:
         cd Stivaly/goal-stats/dist
         git init  
         git add .  
-        git commit -m "Actualizar archivos frontend deploy" 
+        git commit -m "Actualizar archivos frontend deploy"
+
+    - name: Verificar el token
+      run: |
+        if [ -z "${{ secrets.TARGET_REPO_TOKEN }}" ]; then
+          echo "El token no está configurado."
+          exit 1
+        else
+          echo "El token está configurado correctamente."
+        fi
 
     - name: Sincronizar con el repositorio de destino
       env:
