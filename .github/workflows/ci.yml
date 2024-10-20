@@ -21,7 +21,7 @@ jobs:
     - name: Cambiar a la carpeta específica y sincronizar
       run: |
         cd Stivaly/goal-stats/dist
-        git remote add target_repo https://$TARGET_REPO_TOKEN@github.com/Stivaly/Goal_Stats
+        git remote add target_repo https://$TARGET_REPO_TOKEN@github.com/Stivaly/Goal_Stats.git 
         git fetch target_repo
         git push target_repo main 
       env:
