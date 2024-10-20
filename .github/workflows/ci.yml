@@ -18,12 +18,17 @@ jobs:
         git config --global user.name "Stivaly"
         git config --global user.email "stivaly.g@hotmail.com"
 
-    - name: Cambiar a la carpeta específica y sincronizar
+    - name: Hacer commit de la carpeta específica
+      run: |
+        cd Stivaly/goal-stats/dist
+        git init  
+        git add .  
+        git commit -m "Actualizar archivos frontend deploy" 
+
+    - name: Sincronizar con el repositorio de destino
       env:
         TARGET_REPO_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
       run: |
-        cd Stivaly/goal-stats/dist
         git remote add target_repo https://x-access-token:${TARGET_REPO_TOKEN}@github.com/Stivaly/Goal_Stats.git 
-        git fetch target_repo
-        git push target_repo HEAD:main 
+        git push target_repo HEAD:main --force
       
