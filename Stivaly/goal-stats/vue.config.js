@@ -24,6 +24,6 @@ module.exports = defineConfig({
       },
     }, 
   },
-  publicPath: process.env.NODE_ENV === 'production' ? '/Goal_Stats/' : '/',
+  publicPath: '/',
 })
 

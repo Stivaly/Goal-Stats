@@ -11,6 +11,9 @@ body {
   min-height: 100%; }
 
 .brand-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center; 
   padding-top: 7px;
   padding-bottom: 8px; }
   .brand-wrapper .logo {
@@ -46,6 +49,9 @@ body {
     .login-wrapper {
       width: 100%; } }
   .login-wrapper label {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
     font-size: 14px;
     font-weight: bold;
     color: #b0adad; }
@@ -97,6 +103,7 @@ body {
   font-size: 30px;
   color: #000;
   font-weight: bold;
+  text-align: center;
   }
 
 .login-img {
