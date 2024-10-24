@@ -17,8 +17,8 @@ body {
   padding-top: 7px;
   padding-bottom: 8px; }
   .brand-wrapper .logo {
-    font-family: "BudokanRounded", sans-serif;
-    height: 100px; }
+    max-width: 100%;
+    height: auto; }
 
 .login-section-wrapper {
   display: -webkit-box;
@@ -29,21 +29,22 @@ body {
   padding: 20px 100px;
   background-color: #fff;
   justify-content: center;
-  height: 100vh;
+  height: auto; 
+  min-height: 100vh;
   }
   @media (max-width: 991px) {
     .login-section-wrapper {
       padding-left: 50px;
       padding-right: 50px;
-      min-height: 100%; } }
+      padding-top: 10px;
+      height: auto; } }
   @media (max-width: 575px) {
     .login-section-wrapper {
       padding-top: 20px;
       min-height: 100%; } }
 
 .login-wrapper {
-  max-width: 100%;
-  
+  flex-grow: 1;
   padding-bottom: 24px; }
   @media (max-width: 575px) {
     .login-wrapper {
@@ -108,10 +109,10 @@ body {
 
 .login-img {
   width: 100%;
-  min-height: 100%;
+  height: 100vh;
   -o-object-fit: cover;
      object-fit: cover;
-  -o-object-position: left;
-     object-position: left; }
+  -o-object-position: center;
+     object-position: center; }
 
 /*# sourceMappingURL=login.css.map */
