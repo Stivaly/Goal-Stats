@@ -17,8 +17,9 @@ body {
   padding-top: 7px;
   padding-bottom: 8px; }
   .brand-wrapper .logo {
-    max-width: 100%;
-    height: auto; }
+    max-width: 150px;
+    height: auto;
+    margin: 0 auto; }
 
 .login-section-wrapper {
   display: -webkit-box;
