@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="wrapper">
+      <!-- Sidebar y contenido principal -->
       <aside id="sidebar" class="w-auto" v-if="showNav">
         <div class="d-flex flex-column">
           <router-link id="toggle-btn" class="sidebar-link-logo" to="/dashboard/" @click="toggleSidebar">
@@ -53,9 +54,41 @@
             </a>
           </div>
       </aside>
-      <div class="main">
-        <router-view/>
+
+      <!-- Contenedor principal que incluye la barra superior y el contenido -->
+      <div class="main-wrapper">
+        <!-- Barra de navegación superior -->
+        <header class="navbar-top"  v-if="showNav">
+          <div class="navbar-content">
+            <div class="navbar-left">
+              <p>Hola, Cristian</p>
+              <span>Aquí puedes ver todos los usuarios de tu organización</span>
+            </div>
+            <div class="navbar-right">
+              <div class="user-info">
+                <div class="notification">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+                    <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.628-14.5A1.5 1.5 0 0 1 10 3v.234l.544.272C11.597 4.21 12 5.08 12 6v3.5l.883 2.651A.5.5 0 0 1 12.402 13H3.598a.5.5 0 0 1-.48-.649L4 9.5V6c0-.92.403-1.79 1.456-2.494L6 3.234V3a1.5 1.5 0 0 1 1.372-1.5h.256zm.372 1H7a.5.5 0 0 0-.5.5v.416l-.806.403C5.079 4.26 5 4.617 5 5v4l-.5 1.5h7l-.5-1.5V5c0-.383-.079-.74-.694-1.181L9 3.916V3.5A.5.5 0 0 0 8.5 3z"/>
+                  </svg>
+                </div>
+                <img :src="profileImage" width="40" height="40" class="user-avatar">
+                <div class="user-details">
+                  <p>Cristian Valenzuela</p>
+                  <small>Super Admin</small>
+                </div>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                  </svg>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div class="main">
+          <router-view/>  
+        </div>
       </div>
+
+      
     </div >
     
   </div>
@@ -63,11 +96,13 @@
 
 <script>
 import image from '@/assets/images/icono_goal.svg'
+import profileImage from '@/assets/images/icons8-user-64.png'
 
 export default {
   data() {
     return {
       image,
+      profileImage,
     }
   },
   methods:  {

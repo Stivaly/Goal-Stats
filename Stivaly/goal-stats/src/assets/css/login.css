@@ -21,23 +21,18 @@ body {
     height: auto;
     margin: 0 auto; }
 
-.login-section-wrapper {
-  display: -webkit-box;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-          flex-direction: column;
-  padding: 20px 100px;
-  background-color: #fff;
-  justify-content: center;
-  align-items: center;
-  height: auto; 
-  min-height: 100vh;
-  }
+    .login-section-wrapper {
+      display: flex; /* Cambiado para tener un comportamiento más flexible */
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px; /* Ajustado para adaptarse mejor en pantallas pequeñas */
+      background-color: #fff;
+      height: 100%; /* Asegura que ocupe todo el espacio vertical disponible */
+      min-height: 100vh;
+    }
   @media (max-width: 991px) {
     .login-section-wrapper {
-      padding-left: 50px;
-      padding-right: 50px;
       padding-top: 10px;
       height: auto; } }
   @media (max-width: 575px) {

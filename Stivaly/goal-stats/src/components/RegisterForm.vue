@@ -14,7 +14,7 @@
             <form @submit.prevent="submitForm">
               <div class="form-group">
                 <label for="username" class="text-center">Nombre de Usuario<strong class="text-danger"> *</strong></label>
-                <input v-model="form.username" type="text" name="username" id="username" class="input-field" placeholder="Nombre y Apellido" maxlength="30">
+                <input v-model="form.username" type="text" name="username" id="username" class="input-field" placeholder="Nombre de usuario" maxlength="30">
                 <span v-if="isLimitReached" class="limit-warning">Has alcanzado el límite de 30 caracteres.</span>
               </div>
               <div class="form-group">
