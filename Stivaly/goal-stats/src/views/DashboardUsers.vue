@@ -1,18 +1,19 @@
 <template>
     <div>
-      <PanelAdmin /> 
+      <DashboardViewAdmin /> <!-- Componente que contiene el formulario de login -->
     </div>
   </template>
   
   <script>
   // Importa el componente que contiene el formulario de Login
-  import PanelAdmin from '@/components/dashboard/AdminPanel.vue'
+  import DashboardViewAdmin from '@/components/dashboard/UsersAdmin.vue'
   
   export default {
-    name: 'Panel',
+    name: 'AdminUsers',
     components: {
-      PanelAdmin
+        DashboardViewAdmin
     },
+    
   }
   </script>
   

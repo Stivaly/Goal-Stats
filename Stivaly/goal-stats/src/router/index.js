@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import InicioSesion from '@/views/UserLogin.vue'
 import Register from '@/views/UserRegister.vue'
-import Dashboard from '@/views/Dashboard.vue'
 
 const routes = [
   {
@@ -11,17 +10,37 @@ const routes = [
   {
     path: '/login/',
     name: 'Login',
-    component: InicioSesion
+    component: InicioSesion,
+    meta: { key: () => `view1-${Date.now()}` },
   },
   {
     path: '/register/',
     name: 'Register',
-    component: Register
+    component: Register,
+    meta: { key: () => `view1-${Date.now()}` },
   },
   {
     path: '/dashboard/',
-    name: 'Dashboard',
-    component: Dashboard
+    children: [
+      {
+        path: '',
+        name: 'Dashboard',
+        component: () => import('@/views/Dashboard.vue'),
+        meta: { key: () => `view1-${Date.now()}` },
+      },
+      {
+        path: 'profile/',
+        name: 'UserProfile',
+        component: () => import('@/views/UserDetails.vue'),
+        meta: { key: () => `view1-${Date.now()}` },
+      },
+      {
+        path: 'users/',
+        name: 'AdminUsers',
+        component: () => import('@/views/DashboardUsers.vue'),
+        meta: { key: () => `view1-${Date.now()}` },
+      },
+    ]
   },
   {
     path: '/about/',
