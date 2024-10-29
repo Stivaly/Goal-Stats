@@ -1,60 +1,70 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import InicioSesion from '@/views/UserLogin.vue'
-import Register from '@/views/UserRegister.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import Dashboard from "@/views/Dashboard.vue";
+import Tables from "@/views/Tables.vue";
+import Billing from "@/views/Billing.vue";
+import VirtualReality from "@/views/VirtualReality.vue";
+import Profile from "@/views/Profile.vue";
+import Rtl from "@/views/Rtl.vue";
+import SignIn from "@/views/SignIn.vue";
+import SignUp from "@/views/SignUp.vue";
 
 const routes = [
   {
-    path: '/',
-    redirect: '/login/' 
+    path: "/",
+    name: "/",
+    redirect: "/dashboard",
   },
   {
-    path: '/login/',
-    name: 'Login',
-    component: InicioSesion,
-    meta: { key: () => `view1-${Date.now()}` },
+    path: "/dashboard",
+    name: "Dashboard",
+    component: Dashboard,
+    meta: { hideNavbar: false },
   },
   {
-    path: '/register/',
-    name: 'Register',
-    component: Register,
-    meta: { key: () => `view1-${Date.now()}` },
+    path: "/usuarios",
+    name: "Usuarios",
+    component: Tables,
+    meta: { hideNavbar: false },
   },
   {
-    path: '/dashboard/',
-    children: [
-      {
-        path: '',
-        name: 'Dashboard',
-        component: () => import('@/views/Dashboard.vue'),
-        meta: { key: () => `view1-${Date.now()}` },
-      },
-      {
-        path: 'profile/',
-        name: 'UserProfile',
-        component: () => import('@/views/UserDetails.vue'),
-        meta: { key: () => `view1-${Date.now()}` },
-      },
-      {
-        path: 'users/',
-        name: 'AdminUsers',
-        component: () => import('@/views/DashboardUsers.vue'),
-        meta: { key: () => `view1-${Date.now()}` },
-      },
-    ]
+    path: "/billing",
+    name: "Billing",
+    component: Billing,
   },
   {
-    path: '/about/',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
-]
+    path: "/virtual-reality",
+    name: "Virtual Reality",
+    component: VirtualReality,
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: Profile,
+    meta: { hideNavbar: false },
+  },
+  {
+    path: "/rtl-page",
+    name: "Rtl",
+    component: Rtl,
+  },
+  {
+    path: "/sign-in",
+    name: "Sign In",
+    component: SignIn,
+    meta: { hideNavbar: true },
+  },
+  {
+    path: "/sign-up",
+    name: "Sign Up",
+    component: SignUp,
+    meta: { hideNavbar: true },
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+  linkActiveClass: "active",
+});
 
-export default router
+export default router;
