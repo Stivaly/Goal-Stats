@@ -20,16 +20,13 @@
         "route": "/rtl-page"
       },
       {
-        "route": "/sign-in",
-        "rewrite": "/.auth/login/github"
+        "route": "/sign-in"
       },
       {
-        "route": "/sign-up",
-        "rewrite": "/.auth/register"
+        "route": "/sign-up"
       },
       {
-        "route": "/logout",
-        "redirect": "/.auth/logout"
+        "route": "/logout"
       }
     ],
     "navigationFallback": {
