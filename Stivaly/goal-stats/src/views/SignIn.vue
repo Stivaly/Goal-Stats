@@ -19,7 +19,7 @@
               <div class="mt-8 card card-plain">
                 <div class="pb-0 card-header text-start">
                   <h3 class="font-weight-bolder text-primary text-gradient">
-                    Bienvenido Devuelta
+                    Bienvenido de Vuelta
                   </h3>
                   <p class="mb-0">Ingresa tu usuario y contraseña para inciar sesión</p>
                 </div>
@@ -65,7 +65,7 @@
                     <router-link
                       :to="{ name: 'Sign Up' }"
                       class="text-primary text-gradient font-weight-bold"
-                      >Inicia Sesión</router-link
+                      >Regístrate</router-link
                     >
                   </p>
                 </div>

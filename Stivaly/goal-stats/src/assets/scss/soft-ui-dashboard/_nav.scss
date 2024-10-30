@@ -53,7 +53,7 @@
         }
       }
     }
-    &.nav-pills-success {
+    &.nav-pills-primary {
       background: $white;
       color: $white;
       .nav-link{
@@ -63,8 +63,8 @@
       }
       .moving-tab {
         .nav-link.active {
-          background: $success-gradient;
-          color: $success-gradient;
+          background: $primary-gradient;
+          color: $primary-gradient;
         }
       }
     }

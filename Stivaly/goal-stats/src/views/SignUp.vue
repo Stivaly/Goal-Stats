@@ -22,9 +22,9 @@
   </div>
   <div class="container">
     <div class="row mt-lg-n10 mt-md-n11 mt-n10 justify-content-center">
-      <div class="mx-auto col-xl-4 col-lg-5 col-md-7">
+      <div class="mx-auto mb-0 col-xl-4 col-lg-5 col-md-7">
         <div class="card z-index-0">
-          <div class="pt-4 text-center card-header">
+          <div class=" pt-4 text-center card-header">
             <h5>Registro</h5>
           </div>
           <div class="card-body">
@@ -82,7 +82,7 @@
                 checked
               >
                 Acepto los
-                <a href="javascript:;" class="text-dark font-weight-bolder"
+                <a href="javascript:;" class="text-primary font-weight-bolder"
                   >Términos y Condiciones</a
                 >
               </soft-checkbox>
@@ -93,7 +93,7 @@
                   color="primary"
                   full-width
                   variant="gradient"
-                  class="my-4 mb-2"
+                  class="my-3 mb-2"
                   @click="submitForm"
                   >Registrarse</soft-button
                 >
@@ -101,11 +101,9 @@
               <p class="text-sm mt-3 mb-0">
                 ¿Ya tienes cuenta?
                 <router-link
-                  :to="{ username: 'Sign In' }"
-                  class="text-dark font-weight-bolder"
-                >
-                  Inicia Sesión
-                </router-link>
+                  :to="{ name: 'Sign In' }"
+                  class="text-primary text-gradient font-weight-bold"
+                  >Inicia Sesión</router-link>                    
               </p>
             </form>
           </div>
@@ -150,6 +148,8 @@ export default {
   data() {
     return {
       roles: [
+        { value: 'SUPER_ADMIN', label: 'Super Administrador' },
+        { value: 'ADMIN', label: 'Administrador' },
         { value: 'COACH', label: 'Entrenador' },
         { value: 'PLAYER', label: 'Jugador' },
       ],
