@@ -257,16 +257,26 @@ export default {
       return this.roleStyles[role] || this.roleStyles['default'];
     },
     getUserImg(role) {
-      console.log(role);
       return this.roleStyles[role]?.img;
     },
     async deleteUser(userId) {
       try {
-        const response = await axios.delete(`https://goalstats-api.onrender.com/api/users/${userId}`);
+        console.log(userId);
+        const response = await axios.delete(`https://goalstats-api.onrender.com/api/users/${userId}/`, {
+          headers: {
+            'Content-Type': 'application/json' // Puedes mantenerlo si el servidor espera un tipo de contenido específico
+          },
+          withCredentials: false
+        });
         console.log("Usuario eliminado:", response.data);
 
         // Opcional: Eliminar el usuario de la lista local después de una eliminación exitosa
-        this.users = this.users.filter(user => user.id !== userId);
+        if (response.status === 200 || response.status === 204) {
+          this.users = this.users.filter(user => user.id !== userId);
+          console.log("Usuario eliminado:", response.data);
+        } else {
+          console.error("No se pudo eliminar el usuario. Respuesta del servidor:", response);
+        }
       } catch (error) {
         console.error("Error al eliminar el usuario:", error);
       }
