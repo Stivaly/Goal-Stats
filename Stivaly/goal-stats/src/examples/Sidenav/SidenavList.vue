@@ -35,10 +35,10 @@
       </li>
     </ul>
   </div>
-  <div class="text-center sidenav-footer">
+  <div class="text-center p-3">
     <soft-button
       type="button"
-      class="my-4 mb-2"
+      class="my-5 mb-2"
       variant="gradient"
       id="logout"
       color="danger"
@@ -106,16 +106,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-/* Ensures the sidebar and footer are stacked correctly */
-#sidenav-collapse-main {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-.sidenav-footer {
-  padding: 1rem;
-  text-align: center;
-}
-</style>
