@@ -152,14 +152,17 @@ export default {
           if (response.status === 200) {
             // Suponiendo que el token viene en la respuesta
             const token = response.data.token; 
-            console.log(token)// Ajusta según cómo se devuelve el token en la respuesta
+            const username = this.form.username;
+            console.log(token, username)// Ajusta según cómo se devuelve el token en la respuesta
             const now = new Date();
             const expirationDate = new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000); // 10 días en milisegundos
             
             // Guardar el token y la fecha de expiración en localStorage
             localStorage.setItem('authToken', token);
-            localStorage.setItem('tokenExpiration', expirationDate.toISOString()); // Almacena la fecha como cadena
+            localStorage.setItem('tokenExpiration', expirationDate.toISOString());
+            localStorage.setItem('username', username); // Almacena la fecha como cadena
             this.$router.push('/dashboard/'); // Redirige a la página de dashboard o a donde sea necesario
+
           };
           console.log(response) 
           console.log(response.data);

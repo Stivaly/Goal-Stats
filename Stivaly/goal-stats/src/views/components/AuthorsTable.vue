@@ -5,7 +5,7 @@
             <h6 class="mb-0 text-center">Disciplinas Registradas</h6>
           </div>
           <div class="p-3 card-body">
-            <select class="form-control" v-model="selectedDisciplina">
+            <select class="form-control">
               <option v-for="(disciplina, index) in disciplinas" :key="index" :value="disciplina.nombre_disciplina">
                 {{ disciplina.nombre_disciplina }} - {{ disciplina.descripcion }}
               </option>
@@ -27,7 +27,7 @@
               <th
                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
               >
-                Nombre
+                Nombre de Usuario
               </th>
               <th
                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
@@ -37,14 +37,30 @@
               <th
                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2"
               >
-                Disciplina
+                Estado
               </th>
               <th
                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
               >
-                Fecha de Creación
+                Nombre
               </th>
               
+              
+              <th
+                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+              >
+                Fecha de Nacimiento
+              </th>
+              <th
+                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+              >
+                Peso
+              </th>
+              <th
+                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
+              >
+                Estatura
+              </th>
               <th
                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7"
               >
@@ -54,9 +70,9 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="user in users" :key="user.id">
-              <td>
-                <div class="d-flex px-2 py-1">
+            <tr v-for="user in users" :key="user.username">
+              <td class="text-center ">
+                <div class="d-flex px-2 py-1 ms-5 justify-content-start align-items-center">
                   <div>
                     <soft-avatar
                       :img=getUserImg(user.role)
@@ -67,9 +83,9 @@
                     />
                   </div>
                   <div class="d-flex flex-column justify-content-center">
-                    <h6 class="mb-0 text-sm">{{ user.name }}</h6>
+                    <h6 class="mb-0 text-sm">{{ user.username }}</h6>
                     <p class="text-xs text-secondary mb-0">
-                      {{ user.discipline }}
+                      {{ getDisciplinaName(user.nombre_disciplina) }}
                     </p>
                   </div>
                 </div>
@@ -81,12 +97,27 @@
               </td>
               <td class="align-middle text-center">
                 <span class="text-secondary text-xs font-weight-bold"
-                  >{{ user.discipline }}</span
+                  >{{ getEstado(user.is_active) }}</span
                 >
               </td>
               <td class="align-middle text-center">
                 <span class="text-secondary text-xs font-weight-bold"
-                  >{{ user.creationDate }}</span
+                  >{{ mostrarValor(user.nombre, user.apellido) }}</span
+                >
+              </td>
+              <td class="align-middle text-center">
+                <span class="text-secondary text-xs font-weight-bold"
+                  >{{ mostrarValor(user.fecha_nacimiento) }}</span
+                >
+              </td>
+              <td class="align-middle text-center">
+                <span class="text-secondary text-xs font-weight-bold"
+                  >{{ mostrarValor(user.peso) }}</span
+                >
+              </td>
+              <td class="align-middle text-center">
+                <span class="text-secondary text-xs font-weight-bold"
+                  >{{ mostrarValor(user.estatura) }}</span
                 >
               </td>
               <td class="align-middle text-center">
@@ -118,29 +149,47 @@
               <div v-if="selectedUser && selectedUser.id" class="modal-body">
                 <div class="form-group">
                   <label for="userName">Nombre</label>
-                  <input type="text" class="form-control" id="userName" v-model="selectedUser.name">
+                  <input type="text" class="form-control" id="userName" v-model="selectedUser.nombre">
                 </div>
                 <div class="form-group">
-                  <label for="userRole">Rol</label>
-                  <select class="form-control" id="userRole" v-model="selectedUser.role">
-                    <option value="Super Admin">Super Admin</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Entrenador">Entrenador</option>
-                    <option value="Deportista">Deportista</option>
-                  </select>
+                  <label for="userName">Apellido</label>
+                  <input type="text" class="form-control" id="userName" v-model="selectedUser.apellido">
+                </div>
+                <div class="form-group">
+                  <label for="userName">Fecha de Nacimiento</label>
+                  <input type="text" class="form-control" id="userName" v-model="selectedUser.fecha_nacimiento">
+                </div>
+                <div class="form-group">
+                  <label for="userName">Peso</label>
+                  <input type="text" class="form-control" id="userName" v-model="selectedUser.peso">
+                </div>
+                <div class="form-group">
+                  <label for="userName">Estatura</label>
+                  <input type="text" class="form-control" id="userName" v-model="selectedUser.estatura">
                 </div>
                 <div class="form-group">
                   <label for="userDiscipline">Disciplina</label>
-                  <select class="form-control" id="userDiscipline" v-model="selectedUser.discipline">
-                    <option value="Futbol">Futbol</option>
-                    <option value="Basquetbol">Basquetbol</option>
-                    <option value="Tenis">Tenis</option>
+                  <select class="form-control">
+                    <option v-for="(disciplina, index) in disciplinas" :key="index" :value="disciplina.nombre_disciplina">
+                      {{ disciplina.nombre_disciplina }} - {{ disciplina.descripcion }}
+                    </option>
                   </select>
                 </div>
+                <div class="form-group">
+                  <label for="userRole">Rol</label>
+                  <select class="form-control" id="userRole" v-model="selectedUser.role" :value="selectedUser.role">
+                    <option disabled selected>{{ selectedUser.role }} </option>
+                    <option value="SUPER_ADMIN">Super Admin</option>
+                    <option value="ADMIN">Admin</option>
+                    <option value="COACH">Entrenador</option>
+                    <option value="PLAYER">Deportista</option>
+                  </select>
+                </div>
+                
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" @click="saveUserChanges">Guardar Cambios</button>
+                <button type="button" class="btn btn-primary" @click="updateUser()">Guardar Cambios</button>
               </div>
             </div>
           </div>
@@ -175,20 +224,12 @@ export default {
       img4,
       img5,
       img6,
-      users: [
-        { id: 1, name: 'David Wagner', role: 'Super Admin', discipline: 'Futbol', creationDate: '24 Oct, 2015' },
-        { id: 2, name: 'Ina Hogan', role: 'Admin', discipline: 'Basquetbol', creationDate: '24 Oct, 2015' },
-        { id: 3, name: 'Devin Harmon', role: 'Entrenador', discipline: 'Tenis', creationDate: '18 Dec, 2015' },
-        { id: 4, name: 'Lena Page', role: 'Deportista', discipline: 'Futbol', creationDate: '8 Oct, 2016' },
-        { id: 5, name: 'Eula Horton', role: 'Admin', discipline: 'Basquetbol', creationDate: '15 Jun, 2017' },
-        { id: 6, name: 'Victoria Perez', role: 'Entrenador', discipline: 'Tenis', creationDate: '12 Jan, 2019' },
-        { id: 7, name: 'Cora Medina', role: 'Deportista', discipline: 'Futbol', creationDate: '21 July, 2020' },
-      ],
+      users: [],
       roleStyles: {
-        'Super Admin': { color: 'warning', img: img1 },
-        'Admin': { color: 'info', img: img2 },
-        'Entrenador': { color: 'success', img: img3 },
-        'Deportista': { color: 'secondary', img: img4 },
+        'SUPER_ADMIN': { color: 'warning', img: img1 },
+        'ADMIN': { color: 'info', img: img2 },
+        'COACH': { color: 'success', img: img3 },
+        'PLAYER': { color: 'secondary', img: img4 },
         'default': 'badge badge-default'
       },
       selectedUser: {},
@@ -201,12 +242,12 @@ export default {
   },
   async mounted() {
     try {
-      const response = await axios.get('https://goalstats-api.onrender.com/api/disciplines/');
-      this.disciplinas = response.data;
-
-      console.log(this.disciplinas)
-
-      
+      const [response1, response2] = await Promise.all([
+        await axios.get('https://goalstats-api.onrender.com/api/disciplines/'),
+        await axios.get('https://goalstats-api.onrender.com/api/users/'),
+      ]);
+      this.disciplinas = response1.data;
+      this.users = response2.data;      
     } catch (error) {
       console.error('Error al obtener las disciplinas:', error);
     };
@@ -219,11 +260,52 @@ export default {
       console.log(role);
       return this.roleStyles[role]?.img;
     },
+    async deleteUser(userId) {
+      try {
+        const response = await axios.delete(`https://goalstats-api.onrender.com/api/users/${userId}`);
+        console.log("Usuario eliminado:", response.data);
+
+        // Opcional: Eliminar el usuario de la lista local después de una eliminación exitosa
+        this.users = this.users.filter(user => user.id !== userId);
+      } catch (error) {
+        console.error("Error al eliminar el usuario:", error);
+      }
+    },
     editUser(user) {
       this.selectedUser = { ...user }; // Copiar el usuario seleccionado
       const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
       modal.show();
     },
+    async updateUser() {
+    try {
+      // Realizamos el PUT a la URL del API para actualizar el usuario
+      const response = await axios.put(`https://goalstats-api.onrender.com/api/users/${this.selectedUser.id}`, {...this.selectedUser, is_active: true}, { withCredentials: false });
+      console.log(this.selectedUser.id)
+      // Si la actualización es exitosa, actualizamos los datos en la lista
+      if (response.status === 200 || response.status === 204) {
+      // Actualizamos la lista de usuarios solo si el servidor confirma la actualización
+        const index = this.users.findIndex(u => u.id === this.selectedUser.id);
+        if (index !== -1) {
+          this.users.splice(index, 1, response.data); // Actualiza el usuario en la lista
+        }
+
+        // Cerrar el modal después de la actualización
+        const modalElement = document.getElementById('editUserModal');
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        modal.hide();
+
+        // Limpiar el usuario seleccionado
+        this.selectedUser = {};
+
+        console.log('Usuario actualizado:', response.data);
+      }
+    } catch (error) {
+      console.error('Error al actualizar el usuario:', error);
+    }
+    },
+
+
+
     saveUserChanges() {
       const index = this.users.findIndex(u => u.id === this.selectedUser.id);
       if (index !== -1) {
@@ -234,7 +316,17 @@ export default {
       const modal = bootstrap.Modal.getInstance(modalElement);
       modal.hide();
     },
+    getDisciplinaName(disciplinaId) {
+    const disciplina = this.disciplinas.find(d => d.id === disciplinaId);
+    return disciplina ? `${disciplina.nombre_disciplina} - ${disciplina.descripcion}` : "Disciplina no encontrada";
+    },
+    getEstado(estado) {
+      return estado ? "Conectado" : "Desconectado";
+    },
 
+    mostrarValor(valor) {
+      return valor ? valor : "N/A";
+    }
 
   }
 };
