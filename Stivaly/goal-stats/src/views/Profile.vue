@@ -39,7 +39,7 @@
   </div>
   <div class="py-4 container-fluid">
     <div class="mt-3 row">
-      <div class="mt-4 col-12 col-md-6 offset-xl-3 col-xl-6 mt-md-0">
+      <div class="mt-4 col-12 offset-md-3 col-md-6 offset-xl-3 col-xl-6 mt-md-0">
         <profile-info-card
           title="Información del Jugador"
           description="Talentoso lateral derecho conocido por su velocidad y capacidad para anticiparse a las jugadas. Comenzó su carrera en la academia juvenil de su ciudad natal, donde rápidamente destacó por su entrega en el campo y su habilidad para crear oportunidades ofensivas desde la defensa. A los 18 años, fue fichado por el equipo de segunda división FC Highlands, donde se consolidó como titular en su primera temporada y ayudó al equipo a ganar el ascenso a la primera división."
