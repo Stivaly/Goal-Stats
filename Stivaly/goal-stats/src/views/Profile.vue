@@ -24,8 +24,8 @@
         </div>
         <div class="col-auto my-auto">
           <div class="h-100">
-            <h5 class="mb-1">Alec Thompson</h5>
-            <p class="mb-0 text-sm font-weight-bold">Entrenador</p>
+            <h5 class="mb-1">{{ this.selectedUser.nombre }} {{ this.selectedUser.apellido }}</h5>
+            <p class="mb-0 text-sm font-weight-bold">{{ this.selectedDisciplina.nombre_disciplina }}</p>
           </div>
         </div>
         <div
@@ -44,7 +44,7 @@
           title="Información del Jugador"
           description="Talentoso lateral derecho conocido por su velocidad y capacidad para anticiparse a las jugadas. Comenzó su carrera en la academia juvenil de su ciudad natal, donde rápidamente destacó por su entrega en el campo y su habilidad para crear oportunidades ofensivas desde la defensa. A los 18 años, fue fichado por el equipo de segunda división FC Highlands, donde se consolidó como titular en su primera temporada y ayudó al equipo a ganar el ascenso a la primera división."
           :info="{
-            fullName: 'Alec M. Thompson',
+            fullName: user.name,
             mobile: '(44) 123 1234 123',
             email: 'alecthompson@mail.com',
             location: 'CHILE',
@@ -132,28 +132,49 @@ export default {
       faInstagram,
       username: localStorage.getItem('username'),
       users: [],
-      user: {},
+      user: '',
+      selectedUser: {},
+      selectedDisciplina: {},
+      disciplinas: [],
     };
   },
-
   async mounted() {
     this.$store.state.isAbsolute = true;
     setNavPills();
     setTooltip(this.$store.state.bootstrap);
     try {
-      const response = await axios.get('https://goalstats-api.onrender.com/api/users/');
-      const users = response.data; 
-      const user = users.find(user => user.username === this.username);
-      
-      if (user) {
-        console.log('Usuario encontrado:', user);
-        // Aquí puedes trabajar con el usuario encontrado
+    // Hacer las solicitudes a las APIs de disciplinas y usuarios
+    const [response1, response2] = await Promise.all([
+      axios.get('https://goalstats-api.onrender.com/api/disciplines/'),
+      axios.get('https://goalstats-api.onrender.com/api/users/'),
+    ]);
+    
+    const disciplinas = response1.data;
+    const users = response2.data;
+    
+    // Buscar el usuario con el nombre de usuario almacenado en localStorage
+    const user = users.find(user => user.username === this.username);
+    
+    if (user) {
+      console.log('Usuario encontrado:', user);
+      this.selectedUser = user;
+
+      // Buscar la disciplina correspondiente según el ID almacenado en el usuario
+      const disciplina = disciplinas.find(d => d.id === user.nombre_disciplina);
+
+      if (disciplina) {
+        this.selectedDisciplina = disciplina;
+        console.log('Disciplina seleccionada:', this.selectedDisciplina);
       } else {
-        console.log('Usuario no encontrado');
+        console.error('No se encontró la disciplina correspondiente para el usuario');
       }
-    } catch (error) {
-      console.error('Error al obtener nombre de usuario', error);
-    }; 
+
+    } else {
+      console.error('Usuario no encontrado');
+    }
+  } catch (error) {
+    console.error('Error al obtener los datos', error);
+  }
     
   },
   beforeUnmount() {

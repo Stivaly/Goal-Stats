@@ -102,7 +102,7 @@
               </td>
               <td class="align-middle text-center">
                 <span class="text-secondary text-xs font-weight-bold"
-                  >{{ mostrarValor(user.nombre, user.apellido) }}</span
+                  >{{ mostrarValor(user.nombre) }} {{ mostrarValor(user.apellido) }}</span
                 >
               </td>
               <td class="align-middle text-center">
@@ -169,7 +169,7 @@
                 </div>
                 <div class="form-group">
                   <label for="userDiscipline">Disciplina</label>
-                  <select class="form-control">
+                  <select v-model="selectedDisciplinaNombre" class="form-control" id="disciplinaSelect">
                     <option v-for="(disciplina, index) in disciplinas" :key="index" :value="disciplina.nombre_disciplina">
                       {{ disciplina.nombre_disciplina }} - {{ disciplina.descripcion }}
                     </option>
@@ -233,24 +233,14 @@ export default {
         'default': 'badge badge-default'
       },
       selectedUser: {},
-      disciplinas: [],
+      selectedDisciplinaNombre: '',
+      idDisciplina: 0,
+
     };
   },
   components: {
     SoftAvatar,
     SoftBadge,
-  },
-  async mounted() {
-    try {
-      const [response1, response2] = await Promise.all([
-        await axios.get('https://goalstats-api.onrender.com/api/disciplines/'),
-        await axios.get('https://goalstats-api.onrender.com/api/users/'),
-      ]);
-      this.disciplinas = response1.data;
-      this.users = response2.data;      
-    } catch (error) {
-      console.error('Error al obtener las disciplinas:', error);
-    };
   },
   methods: {
     getRoleStyle(role) {
@@ -288,8 +278,20 @@ export default {
     },
     async updateUser() {
     try {
+      const disciplinaSeleccionada = this.disciplinas.find(
+          (disciplina) => disciplina.nombre_disciplina === this.selectedDisciplinaNombre
+        );
+      const idDisciplina = disciplinaSeleccionada.id;
+        if (disciplinaSeleccionada) {
+          const idDisciplina = disciplinaSeleccionada.id;
+          // Aquí puedes proceder a enviar el ID en el JSON para guardar los cambios
+          console.log('ID de la disciplina seleccionada:', idDisciplina);
+          // Lógica para guardar el JSON con el ID correspondiente...
+        } else {
+          console.error('No se encontró la disciplina seleccionada');
+        }
       // Realizamos el PUT a la URL del API para actualizar el usuario
-      const response = await axios.put(`https://goalstats-api.onrender.com/api/users/${this.selectedUser.id}`, {...this.selectedUser, is_active: true}, { withCredentials: false });
+      const response = await axios.put(`https://goalstats-api.onrender.com/api/users/${this.selectedUser.id}`, {...this.selectedUser, is_active: true, nombre_disciplina: idDisciplina }, { withCredentials: false });
       console.log(this.selectedUser.id)
       // Si la actualización es exitosa, actualizamos los datos en la lista
       if (response.status === 200 || response.status === 204) {
@@ -298,6 +300,8 @@ export default {
         if (index !== -1) {
           this.users.splice(index, 1, response.data); // Actualiza el usuario en la lista
         }
+
+        
 
         // Cerrar el modal después de la actualización
         const modalElement = document.getElementById('editUserModal');
@@ -314,7 +318,18 @@ export default {
     }
     },
 
-
+    async dataUsers() {
+      try {
+      const [response1, response2] = await Promise.all([
+        await axios.get('https://goalstats-api.onrender.com/api/disciplines/'),
+        await axios.get('https://goalstats-api.onrender.com/api/users/'),
+      ]);
+      this.disciplinas = response1.data;
+      this.users = response2.data;      
+    } catch (error) {
+      console.error('Error al obtener las disciplinas:', error);
+    };
+    },
 
     saveUserChanges() {
       const index = this.users.findIndex(u => u.id === this.selectedUser.id);
@@ -338,6 +353,9 @@ export default {
       return valor ? valor : "N/A";
     }
 
-  }
+  },
+  mounted() {
+    this.dataUsers()
+  },
 };
 </script>
