@@ -1,0 +1,42 @@
+{
+    "trailingSlash": "auto",
+    "routes": [
+      {
+        "route": "/dashboard"
+      },
+      {
+        "route": "/usuarios"
+      },
+      {
+        "route": "/billing"
+      },
+      {
+        "route": "/virtual-reality"
+      },
+      {
+        "route": "/profile"
+      },
+      {
+        "route": "/rtl-page"
+      },
+      {
+        "route": "/sign-in"
+      },
+      {
+        "route": "/sign-up"
+      },
+      {
+        "route": "/logout"
+      }
+    ],
+    "navigationFallback": {
+      "rewrite": "index.html",
+      "exclude": ["/images/*.{png,jpg,gif}", "/css/*"]
+    },
+    "responseOverrides": {
+      "404": {
+        "rewrite": "/404.html"
+      }
+    }
+  }
+  
