@@ -33,8 +33,19 @@
         >
         </h6>
       </li>
-      
     </ul>
+  </div>
+  <div class="text-center sidenav-footer">
+    <soft-button
+      type="button"
+      class="my-4 mb-2"
+      variant="gradient"
+      id="logout"
+      color="danger"
+      full-width
+      @click="logout"
+      >Cerrar Sesión
+    </soft-button>
   </div>
 </template>
 <script>
@@ -49,6 +60,7 @@ import CustomerSupport from "../../components/Icon/CustomerSupport.vue";
 // import Document from "../../components/Icon/Document.vue";
 // import Spaceship from "../../components/Icon/Spaceship.vue";
 // import Settings from "../../components/Icon/Settings.vue";
+import SoftButton from "../../components/SoftButton.vue";
 
 export default {
   name: "SidenavList",
@@ -71,6 +83,7 @@ export default {
     // CreditCard,
     // Box3d,
     CustomerSupport,
+    SoftButton,
     // Document,
     // Spaceship,
     // Settings,
@@ -80,6 +93,29 @@ export default {
       const routeArr = this.$route.path.split("/");
       return routeArr[1];
     },
+    logout() {
+        // Elimina el token y la fecha de expiración de localStorage
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('tokenExpiration');
+  
+        console.log('El usuario ha cerrado sesión y el token ha sido destruido.');
+  
+        // Redirige al usuario a la página de inicio de sesión
+        this.$router.push('/sign-in'); // Asegúrate de que la ruta sea correcta
+    },
   },
 };
 </script>
+<style scoped>
+/* Ensures the sidebar and footer are stacked correctly */
+#sidenav-collapse-main {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.sidenav-footer {
+  padding: 1rem;
+  text-align: center;
+}
+</style>
