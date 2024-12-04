@@ -11,7 +11,13 @@
           </template>
         </sidenav-collapse>
       </li>
-      
+      <li class="nav-item">
+        <sidenav-collapse navText="Disciplinas" :to="{ name: 'Disciplinas' }">
+          <template #icon>
+            <People />
+          </template>
+        </sidenav-collapse>
+      </li>
       <li class="nav-item">
         <sidenav-collapse navText="Usuarios" :to="{ name: 'Usuarios' }">
           <template #icon>

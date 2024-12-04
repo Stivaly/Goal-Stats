@@ -24,6 +24,59 @@ class UserService {
         };
     }
 
+    calcularEdad(fechaNacimiento) {
+        const hoy = new Date();
+        const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+        const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+    
+        // Si aún no es el cumpleaños este año, restar 1
+        if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+            return edad - 1;
+        }
+        return edad;
+    }
+
+    async editUser(userId, userData) {
+        try {
+            if (!userData || typeof userData !== "object") {
+                throw new Error("Los datos del usuario son inválidos.");
+            }
+            
+            if (userData.peso !== undefined) {
+                const peso = parseFloat(userData.peso);
+                if (isNaN(peso) || peso < 15 || peso > 150) {
+                    throw new Error("El peso debe estar entre 15 kg y 150 kg.");
+                }
+            }
+            if (userData.estatura !== undefined) {
+                const estatura = parseFloat(userData.estatura);
+                if (isNaN(estatura) || estatura < 50 || estatura > 220) {
+                    throw new Error("La estatura debe ser un número positivo y mayor o igual a 50 cm.");
+                }
+            }
+            if (userData.fecha_nacimiento !== undefined) {
+                const fechaNacimiento = new Date(userData.fecha_nacimiento);
+                if (isNaN(fechaNacimiento.getTime())) {
+                    throw new Error("La fecha de nacimiento es inválida.");
+                }
+    
+                const edad = this.calcularEdad(fechaNacimiento);
+                if (edad < 7) {
+                    throw new Error("La edad no puede ser menor a 7 años.");
+                }
+            }
+            console.log('userData:', userData);
+            const response = await this.axiosInstance.patch(`/users/${userId}/`, userData);
+    
+            console.log('Usuario actualizado:', response.data);
+    
+            return response.data; // Retorna los datos del usuario actualizado
+        } catch (error) {
+            console.error('Error al editar el usuario:', error);
+            throw error; // Lanza el error para manejarlo en el lugar donde se llama este método
+        }
+    }
+
     filterUsersByDiscipline(disciplineName) {
         if (!this.users.length) {
             console.warn('No hay usuarios cargados para filtrar.');
@@ -99,60 +152,18 @@ class UserService {
         }
     }
 
-    calcularEdad(fechaNacimiento) {
-        const hoy = new Date();
-        const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
-        const mes = hoy.getMonth() - fechaNacimiento.getMonth();
-    
-        // Si aún no es el cumpleaños este año, restar 1
-        if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
-            return edad - 1;
-        }
-        return edad;
-    }
-
-
-
-    async editUser(userId, userData) {
+    async deleteDiscipline(disciplineId) {
         try {
-            if (!userData || typeof userData !== "object") {
-                throw new Error("Los datos del usuario son inválidos.");
-            }
-            
-            if (userData.peso !== undefined) {
-                const peso = parseFloat(userData.peso);
-                if (isNaN(peso) || peso < 15 || peso > 150) {
-                    throw new Error("El peso debe estar entre 15 kg y 150 kg.");
-                }
-            }
-            if (userData.estatura !== undefined) {
-                const estatura = parseFloat(userData.estatura);
-                if (isNaN(estatura) || estatura < 50 || estatura > 220) {
-                    throw new Error("La estatura debe ser un número positivo y mayor o igual a 50 cm.");
-                }
-            }
-            if (userData.fecha_nacimiento !== undefined) {
-                const fechaNacimiento = new Date(userData.fecha_nacimiento);
-                if (isNaN(fechaNacimiento.getTime())) {
-                    throw new Error("La fecha de nacimiento es inválida.");
-                }
-    
-                const edad = this.calcularEdad(fechaNacimiento);
-                if (edad < 7) {
-                    throw new Error("La edad no puede ser menor a 7 años.");
-                }
-            }
-            console.log('userData:', userData);
-            const response = await this.axiosInstance.patch(`/users/${userId}/`, userData);
-    
-            console.log('Usuario actualizado:', response.data);
-    
-            return response.data; // Retorna los datos del usuario actualizado
+            const response = await this.axiosInstance.delete(`/disciplines/${disciplineId}/`);
+            console.log('Disciplina eliminada:', response.data);
+            this.disciplinas = this.disciplinas.filter(discipline => discipline.id !== disciplineId);
+            return response.data;
         } catch (error) {
-            console.error('Error al editar el usuario:', error);
-            throw error; // Lanza el error para manejarlo en el lugar donde se llama este método
+            console.error('Error al eliminar la disciplina:', error);
+            throw error;
         }
     }
+    
 }
 
 export default UserService;

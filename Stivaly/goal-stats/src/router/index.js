@@ -13,6 +13,12 @@ const routes = [
     meta: { hideNavbar: false },
   },
   {
+    path: "/disciplinas",
+    name: "Disciplinas",
+    component: () => import('@/views/Disciplines.vue'),
+    meta: { hideNavbar: false },
+  },
+  {
     path: "/usuarios",
     name: "Usuarios",
     component: () => import('@/views/Tables.vue'),
