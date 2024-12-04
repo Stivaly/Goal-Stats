@@ -14,7 +14,7 @@
       <li class="nav-item">
         <sidenav-collapse navText="Disciplinas" :to="{ name: 'Disciplinas' }">
           <template #icon>
-            <People />
+            <Sport />
           </template>
         </sidenav-collapse>
       </li>
@@ -62,6 +62,7 @@ import Shop from "../../components/Icon/Shop.vue";
 import People from "../../components/Icon/People.vue";
 // import CreditCard from "../../components/Icon/CreditCard.vue";
 // import Box3d from "../../components/Icon/Box3d.vue";
+import Sport from "../../components/Icon/Document.vue";
 import CustomerSupport from "../../components/Icon/CustomerSupport.vue";
 // import Document from "../../components/Icon/Document.vue";
 // import Spaceship from "../../components/Icon/Spaceship.vue";
@@ -93,6 +94,7 @@ export default {
     // Document,
     // Spaceship,
     // Settings,
+    Sport,
   },
   methods: {
     getRoute() {

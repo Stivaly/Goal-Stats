@@ -51,6 +51,15 @@
 
 // Avatar size variations
 
+.avatar-custom {
+	width: 200px !important;
+	height: 600px!important;
+
+  &.avatar-raised {
+    margin-top: -($avatar-xxl-height / 2);
+  }
+}
+
 .avatar-xxl {
 	width: $avatar-xxl-width !important;
 	height: $avatar-xxl-height !important;

@@ -1,4 +1,5 @@
 <template>
+  <div class="container">
     <!-- Edit Modal -->
         <div v-if="showModal" class="modal-container">
             <div class="modal-content">
@@ -137,7 +138,7 @@
         <div class="modal-overlay" @click="closeEditModal"></div>
         <div class="modal-content">
         <div class="modal-header">
-            <h5 class="modal-title">Editar Posición</h5>
+            <h5 class="modal-title">Guardar</h5>
         </div>
         <div class="modal-body">
             <!-- Contenido del modal -->
@@ -183,7 +184,7 @@
                     variant="gradient"
                     color="success"
                     :disabled="loading"
-                    >Editar Disciplina
+                    >Guardar Disciplina
                 </soft-button>
                 <div class="ms-3" v-if="loading">
                     <span class="loader justify-center"></span>
@@ -208,6 +209,8 @@
         </div>
     </div>
     </div> 
+
+  </div>
 </template>
 
 <script>
@@ -269,6 +272,21 @@ export default {
       this.selectedDisciplina = { ...disciplina }; // Crear una copia de la disciplina seleccionada
       this.showEditDisciplineModal = true;
       this.showModal = false;
+    },
+
+    async updateDiscipline(event) {
+      event.preventDefault();
+      this.loading = true;
+      try {
+        const updatedDiscipline = await userService.editDiscipline(this.selectedDisciplina.id, this.selectedDisciplina);
+        this.showEditDisciplineModal = false;
+        alert(`Disciplina actualizada con éxito: ${updatedDiscipline.nombre_disciplina}`);
+        this.showModal = true;
+        this.loading = false;
+      } catch (error) {
+        this.loading = false;
+        alert('Error al actualizar la disciplina:', error);
+      }
     },
 
     async deleteDiscipline(index) {
