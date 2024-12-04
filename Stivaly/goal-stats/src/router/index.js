@@ -1,12 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Dashboard from "@/views/Dashboard.vue";
-import Tables from "@/views/Tables.vue";
-import Billing from "@/views/Billing.vue";
-import VirtualReality from "@/views/VirtualReality.vue";
-import Profile from "@/views/Profile.vue";
-import Rtl from "@/views/Rtl.vue";
-import SignIn from "@/views/SignIn.vue";
-import SignUp from "@/views/SignUp.vue";
 
 const routes = [
   {
@@ -17,46 +9,46 @@ const routes = [
   {
     path: "/dashboard",
     name: "Dashboard",
-    component: Dashboard,
+    component: () => import('@/views/Dashboard.vue'),
     meta: { hideNavbar: false },
   },
   {
     path: "/usuarios",
     name: "Usuarios",
-    component: Tables,
+    component: () => import('@/views/Tables.vue'),
     meta: { hideNavbar: false },
   },
   {
     path: "/billing",
     name: "Billing",
-    component: Billing,
+    component: () => import('@/views/Billing.vue'),
   },
   {
     path: "/virtual-reality",
     name: "Virtual Reality",
-    component: VirtualReality,
+    component: () => import('@/views/VirtualReality.vue'),
   },
   {
     path: "/profile",
     name: "Profile",
-    component: Profile,
+    component: () => import('@/views/Profile.vue'),
     meta: { hideNavbar: false },
   },
   {
     path: "/rtl-page",
     name: "Rtl",
-    component: Rtl,
+    component: () => import('@/views/Rtl.vue'),
   },
   {
     path: "/sign-in",
     name: "Sign In",
-    component: SignIn,
+    component: () => import('@/views/SignIn.vue'),
     meta: { hideNavbar: true },
   },
   {
     path: "/sign-up",
     name: "Sign Up",
-    component: SignUp,
+    component: () => import('@/views/SignUp.vue'),
     meta: { hideNavbar: true },
   },
 ];

@@ -1,5 +1,4 @@
 <template>
-  <navbar btn-background="bg-gradient-primary" />
   <div
     class="pt-5 m-3 page-header align-items-start min-vh-50 pb-11 border-radius-lg"
     :style="{
@@ -86,24 +85,30 @@
                   >Términos y Condiciones</a
                 >
               </soft-checkbox>
-
+              
               <div class="text-center">
+                <div class="d-flex justify-content-center" v-if="loading">
+                  <span class="loader justify-center"></span>
+                </div>
                 <soft-button
                   type="button"
                   color="primary"
                   full-width
                   variant="gradient"
                   class="my-3 mb-2"
+                  :disabled="loading"
                   @click="submitForm"
-                  >Registrarse</soft-button
+                  > Registrarse </soft-button
                 >
+                
               </div>
               <p class="text-sm mt-3 mb-0">
                 ¿Ya tienes cuenta?
                 <router-link
                   :to="{ name: 'Sign In' }"
                   class="text-primary text-gradient font-weight-bold"
-                  >Inicia Sesión</router-link>                    
+                  >Inicia Sesión</router-link>
+                                   
               </p>
             </form>
           </div>
@@ -114,23 +119,21 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Navbar from "@/examples/PageLayout/Navbar.vue";
+// import Navbar from "@/examples/PageLayout/Navbar.vue";
 // import AppFooter from "@/examples/PageLayout/Footer.vue";
 // import SoftInput from "@/components/SoftInput.vue";
 import SoftCheckbox from "@/components/SoftCheckbox.vue";
 import SoftButton from "@/components/SoftButton.vue";
 // import SoftList from "@/components/softList.vue";
-
+import AuthService from '@/assets/js/authService.js';
 import { mapMutations } from "vuex";
 
-axios.defaults.withCredentials = false;
-axios.defaults.baseURL = 'https://goalstats-api.onrender.com/api'
+const authService = new AuthService('https://goalstats-api.onrender.com/api');
 
 export default {
   username: "SignupBasic",
   components: {
-    Navbar,
+    // Navbar,
     // AppFooter,
     // SoftInput,
     SoftCheckbox,
@@ -161,6 +164,7 @@ export default {
       },
       selectedRole: '',
       isPasswordValid: true,
+      loading: false,
     }
   },
   computed: {
@@ -186,22 +190,22 @@ export default {
       this.$forceUpdate();
     },
     async submitForm() {
-      if (!this.form.username || !this.form.email || !this.form.password || !this.selectedRole) {
-        alert("Todos los campos son obligatorios." + this.form.username + this.form.email + this.form.password + this.selectedRole  );
-        return;
-      }
       this.form.role = this.selectedRole;
-      console.log(this.form);
+
       try {
-        const response = await axios.post('https://goalstats-api.onrender.com/api/register/', this.form);
-        console.log(response) 
-        console.log(response.data);
+        this.loading = true;
+        const response = await authService.registerUser(this.form);
         
         if (response.status === 201) {
           alert('Registro exitoso');
           this.$router.push('/sign-in'); // Redirige a la página de dashboard o a donde sea necesario
-        }
+        } else if (response.status === 400) {
+          alert('Solicitud incorrecta. Verifique los campos ingresados.');
+        } else if (response.status === 409) {
+          alert('El usuario ya está registrado. Por favor, utiliza un usuario diferente.')
+        };
       } catch (error) {
+        this.loading = false;
         console.error('Error al registrar:', error);
         alert('Error en el registro, intenta nuevamente.');
       };
@@ -209,3 +213,76 @@ export default {
   },
   }
 </script>
+
+<style scope>
+.loader {
+        transform: rotateZ(45deg);
+        perspective: 1000px;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        color: #f708a8;
+      }
+        .loader:before,
+        .loader:after {
+          content: '';
+          display: block;
+          position: absolute;
+          width: inherit;
+          height: inherit;
+          border-radius: 50%;
+          transform: rotateX(70deg);
+          animation: 1s spin linear infinite;
+        }
+        .loader:after {
+          color: #3b0066;
+          transform: rotateY(70deg);
+          animation-delay: .4s;
+        }
+
+      @keyframes rotate {
+        0% {
+          transform: translate(-50%, -50%) rotateZ(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotateZ(360deg);
+        }
+      }
+
+      @keyframes rotateccw {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(-360deg);
+        }
+      }
+
+      @keyframes spin {
+        0%,
+        100% {
+          box-shadow: .2em 0px 0 0px currentcolor;
+        }
+        12% {
+          box-shadow: .2em .2em 0 0 currentcolor;
+        }
+        25% {
+          box-shadow: 0 .2em 0 0px currentcolor;
+        }
+        37% {
+          box-shadow: -.2em .2em 0 0 currentcolor;
+        }
+        50% {
+          box-shadow: -.2em 0 0 0 currentcolor;
+        }
+        62% {
+          box-shadow: -.2em -.2em 0 0 currentcolor;
+        }
+        75% {
+          box-shadow: 0px -.2em 0 0 currentcolor;
+        }
+        87% {
+          box-shadow: .2em -.2em 0 0 currentcolor;
+        }
+      }
+</style>

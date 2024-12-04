@@ -2,11 +2,6 @@
   <div class="container top-0 position-sticky z-index-sticky">
     <div class="row">
       <div class="col-12">
-        <navbar
-          is-blur="blur blur-rounded my-3 py-2 start-0 end-0 mx-4 shadow"
-          btn-background="bg-gradient-primary"
-          :dark-mode="true"
-        />
       </div>
     </div>
   </div>
@@ -47,12 +42,16 @@
                       Recordarme
                     </soft-switch>
                     <div class="text-center">
+                      <div class="d-flex justify-content-center" v-if="loading">
+                        <span class="loader justify-center"></span>
+                      </div>
                       <soft-button
                         type="button"
                         class="my-4 mb-2"
                         variant="gradient"
                         color="primary"
                         full-width
+                        :disabled="loading"
                         @click="submitForm"
                         >Iniciar Sesión
                       </soft-button>
@@ -96,22 +95,21 @@
 </template>
 
 <script>
-import Navbar from "@/examples/PageLayout/Navbar.vue";
+// import Navbar from "@/examples/PageLayout/Navbar.vue";
 // import AppFooter from "@/examples/PageLayout/Footer.vue";
-import axios from "axios";
 // import SoftInput from "@/components/SoftInput.vue";
 import SoftSwitch from "@/components/SoftSwitch.vue";
 import SoftButton from "@/components/SoftButton.vue";
 const body = document.getElementsByTagName("body")[0];
 import { mapMutations } from "vuex";
+import AuthService from '@/assets/js/authService.js';
 
-axios.defaults.withCredentials = false;
-axios.defaults.baseURL = 'https://goalstats-api.onrender.com/api'
+const authService = new AuthService('https://goalstats-api.onrender.com/api');
 
 export default {
   name: "SignIn",
   components: {
-    Navbar,
+    // Navbar,
     // AppFooter,
     // SoftInput,
     SoftSwitch,
@@ -134,11 +132,11 @@ export default {
           password: '',
         },
         errorMessage: '',
+        loading: false,
       }
     },
     mounted() {
       if (!this.isTokenExpired() && localStorage.getItem('authToken')) {
-        console.log('Ya hay un token válido, redirigiendo al dashboard...');
         this.$router.push('/dashboard');
       }
       
@@ -146,57 +144,107 @@ export default {
   methods: {
     ...mapMutations(["toggleEveryDisplay", "toggleHideConfig"]),
     async submitForm() {
-        console.log(this.form);
         try {
-          const response = await axios.post('https://goalstats-api.onrender.com/api/login/', this.form)
+          this.loading = true;
+          const response = await authService.loginUser(this.form)
           if (response.status === 200) {
-            // Suponiendo que el token viene en la respuesta
-            const token = response.data.token; 
-            const username = this.form.username;
-            console.log(token, username)// Ajusta según cómo se devuelve el token en la respuesta
-            const now = new Date();
-            const expirationDate = new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000); // 10 días en milisegundos
-            
-            // Guardar el token y la fecha de expiración en localStorage
-            localStorage.setItem('authToken', token);
-            localStorage.setItem('tokenExpiration', expirationDate.toISOString());
-            localStorage.setItem('username', username); // Almacena la fecha como cadena
-            this.$router.push('/dashboard/'); // Redirige a la página de dashboard o a donde sea necesario
-
-          };
-          console.log(response) 
-          console.log(response.data);
+            alert('Registro exitoso'); 
+            this.$router.push('/dashboard/'); 
+          } else if (response.status === 400) {
+            this.errorMessage = 'Datos inválidos. Por favor, Verifica tus credenciales.';
+          } else if (response.status === 401) {
+            this.errorMessage = 'No autorizado. Verifica tus credenciales.';
+          } else if (response.status === 500) {
+            this.errorMessage = 'Error del servidor. Contacta al administrador del sistema.';
+          } else {
+            this.errorMessage = `Error ${response.status}: ${response.data.message}`;
+          }
 
         } catch (error) {
+          this.loading = false;
           console.error('Error al registrar:', error);
-          if (error.response) {
-            // Errores HTTP (como 400 o 500)
-            if (error.response.status === 400) {
-              this.errorMessage = 'Datos inválidos. Por favor, Verifica tus credenciales.';
-            } else if (error.response.status === 401) {
-              this.errorMessage = 'No autorizado. Verifica tus credenciales.';
-            } else if (error.response.status === 500) {
-              this.errorMessage = 'Error del servidor. Contacta al administrador del sistema.';
-            } else {
-              this.errorMessage = `Error ${error.response.status}: ${error.response.data.message}`;
-            }
-          } else if (error.request) {
-            // No se recibió respuesta
-            this.errorMessage = 'No se pudo conectar al servidor. Revisa tu conexión de internet.';
-          } else {
-            // Otros errores desconocidos
-            this.errorMessage = 'Ocurrió un error inesperado. Intenta nuevamente más tarde.';
-          };
+          alert('Ocurrió un error inesperado. Intenta nuevamente más tarde.');
         };
       },
       isTokenExpired() {
         const expiration = localStorage.getItem('tokenExpiration');
-        console.log('Fecha de expiración del token:', expiration);
         if (!expiration) return true;
-
         const now = new Date();
         return now > new Date(expiration); // Retorna true si ya expiró
       },
   },
 };
 </script>
+
+<style scope>
+.loader {
+        transform: rotateZ(45deg);
+        perspective: 1000px;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        color: #f708a8;
+      }
+        .loader:before,
+        .loader:after {
+          content: '';
+          display: block;
+          position: absolute;
+          width: inherit;
+          height: inherit;
+          border-radius: 50%;
+          transform: rotateX(70deg);
+          animation: 1s spin linear infinite;
+        }
+        .loader:after {
+          color: #3b0066;
+          transform: rotateY(70deg);
+          animation-delay: .4s;
+        }
+
+      @keyframes rotate {
+        0% {
+          transform: translate(-50%, -50%) rotateZ(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotateZ(360deg);
+        }
+      }
+
+      @keyframes rotateccw {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(-360deg);
+        }
+      }
+
+      @keyframes spin {
+        0%,
+        100% {
+          box-shadow: .2em 0px 0 0px currentcolor;
+        }
+        12% {
+          box-shadow: .2em .2em 0 0 currentcolor;
+        }
+        25% {
+          box-shadow: 0 .2em 0 0px currentcolor;
+        }
+        37% {
+          box-shadow: -.2em .2em 0 0 currentcolor;
+        }
+        50% {
+          box-shadow: -.2em 0 0 0 currentcolor;
+        }
+        62% {
+          box-shadow: -.2em -.2em 0 0 currentcolor;
+        }
+        75% {
+          box-shadow: 0px -.2em 0 0 currentcolor;
+        }
+        87% {
+          box-shadow: .2em -.2em 0 0 currentcolor;
+        }
+      }
+</style>

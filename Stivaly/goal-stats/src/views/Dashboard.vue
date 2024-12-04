@@ -1,7 +1,7 @@
 <template>
   <div class="py-4 container-fluid">
     <div class="row">
-      <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+      <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
         <mini-statistics-card
           title="Usuarios Totales"
           value="327"
@@ -16,7 +16,7 @@
           direction-reverse
         />
       </div>
-      <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+      <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
         <mini-statistics-card
           title="Usuarios En Línea"
           value="30"
@@ -31,7 +31,7 @@
           direction-reverse
         />
       </div>
-      <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+      <div class="col-xl-4 col-sm-12 mb-xl-0 mb-4">
         <mini-statistics-card
           title="Disponibilidad"
           value="200 Horas"
@@ -41,21 +41,6 @@
           }"
           :icon="{
             component: 'ni ni-paper-diploma',
-            background: iconBackground,
-          }"
-          direction-reverse
-        />
-      </div>
-      <div class="col-xl-3 col-sm-6 mb-xl-0">
-        <mini-statistics-card
-          title="Servicios Activos"
-          value="5"
-          :percentage="{
-            value: '+5%',
-            color: 'text-primary',
-          }"
-          :icon="{
-            component: 'ni ni-cart',
             background: iconBackground,
           }"
           direction-reverse
@@ -105,11 +90,11 @@
                           ],
                           datasets: [
                             {
-                              label: 'Mobile Apps',
+                              label: '2024',
                               data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
                             },
                             {
-                              label: 'Websites',
+                              label: '2023',
                               data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
                             },
                           ],
@@ -162,16 +147,6 @@
                   icon: { color: 'info', component: faHandPointer },
                   label: 'clicks',
                   progress: { content: '2m', percentage: 90 },
-                },
-                {
-                  icon: { color: 'warning', component: faCreditCard },
-                  label: 'Sales',
-                  progress: { content: '435$', percentage: 30 },
-                },
-                {
-                  icon: { color: 'danger', component: faScrewdriverWrench },
-                  label: 'Items',
-                  progress: { content: '43', percentage: 50 },
                 },
               ]"
             />

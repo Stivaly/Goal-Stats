@@ -19,7 +19,7 @@
           index
         ) in items"
         :key="index"
-        class="py-3 col-3 ps-0"
+        class="py-3 col-6 ps-0"
       >
         <div class="mb-2 d-flex">
           <div

@@ -3,7 +3,6 @@
     class="shadow-none navbar navbar-main navbar-expand-lg border-radius-xl"
     v-bind="$attrs"
     id="navbarBlur"
-    data-scroll="true"
   >
     <div class="px-3 py-1 container-fluid">
       <breadcrumbs :currentPage="currentRouteName" :textWhite="textWhite" />
@@ -197,6 +196,7 @@ export default {
     },
   },
   updated() {
+    /*
     const navbar = document.getElementById("navbarBlur");
     window.addEventListener("scroll", () => {
       if (window.scrollY > 10 && this.$store.state.isNavFixed) {
@@ -208,7 +208,7 @@ export default {
         navbar.classList.remove("position-sticky");
         navbar.classList.remove("shadow-blur");
       }
-    });
+    }); */
   },
 };
 </script>
