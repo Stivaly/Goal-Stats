@@ -12,14 +12,14 @@ class metricsService {
     async getAllMetrics() {
         try {
             const response = await this.axiosInstance.get('/performance-metrics/');
-            return response.data; // Devuelve todas las métricas
+            console.log("Métricas obtenidas con éxito:", response.data);
+            return response.data; 
         } catch (error) {
             console.error("Error fetching metrics:", error);
-            throw error; // Propaga el error para manejo externo
+            throw error; 
         }
     }
 
-    // Filtrar métricas por atleta en el frontend
     async getMetricsByAthlete(athleteId) {
         try {
             // Obtiene todas las métricas
@@ -33,6 +33,34 @@ class metricsService {
             throw error;
         }
     }
+
+    async createMetric(metricData) {
+        try {
+            if (!metricData || typeof metricData !== 'object') {
+                throw new Error("Datos de métrica inválidos");
+            }
+            console.log(metricData);
+            const response = await this.axiosInstance.post('/performance-metrics/', metricData);
+            console.log("Métrica creada con éxito:", response.data);
+            return response.data; // Devuelve la métrica creada
+        } catch (error) {
+            console.error("Error creating metric:", error);
+            throw error; // Propaga el error para manejo externo
+        }
+    }
+
+    async deleteMetric(metricId) {
+        try {
+    
+            const response = await this.axiosInstance.delete(`/performance-metrics/${metricId}/`);
+            console.log("Métrica eliminada con éxito:", response.data);
+            return response.data; 
+        } catch (error) {
+            console.error("Error al eliminar la métrica:", error);
+            throw error; 
+        }
+    }
+    
 }
 
 export default metricsService;

@@ -10,9 +10,9 @@
     >
       <span class="mask bg-gradient-primary opacity-6"></span>
     </div>
-    <div class="mx-4 overflow-hidden card card-body blur shadow-blur mt-n6">
+    <div v-if="!showCreate" class="mx-4 overflow-hidden card card-body blur shadow-blur mt-n6">
       <div class="row gx-4">
-        <div class="col-auto">
+        <div  class="col-auto">
           <div class="col-auto my-auto">
           <div class="w-100 text-center">
             <h5 class="mb-1">{{ this.selectedUser.nombre }} {{ this.selectedUser.apellido }}</h5>
@@ -29,22 +29,19 @@
           </div>
         </div>
         
-        <div
-          class="mt-7 ms-6 col-auto text-start justify-content-center align-items-center"
-        >
-        <div class="d-flex align-items-center justify-content-between">
-
-          <h6 class="mb-0">Métricas</h6>
-          <soft-button
-            type="button"
-            color="primary"
-            variant="gradient"
-            class="btn my-3 mb-2"
-            @click="submitForm"
-            > Agregar Nueva Métrica </soft-button>
-        </div>
+        <div class="mt-7 ms-6 col-auto text-start justify-content-center align-items-center">
+          <div class="d-flex align-items-center justify-content-between">
+            <h6 class="mb-0">Métricas</h6>
+            <soft-button
+              type="button"
+              color="primary"
+              variant="gradient"
+              class="btn my-3 mb-2"
+              @click="showCreate = true"
+              > Agregar Nueva Métrica </soft-button>
+          </div>
         
-        <div class="table-responsive">
+        <div v-if="!showCreate" class="table-responsive">
           <table class="table border border-secondary-subtle  mt-3">
             <thead class="">
               <tr>
@@ -55,6 +52,7 @@
                 <th class="text-center">Puntuación <br>de Rendimiento</th>
                 <th class="text-center">Posición <br>Sugerida</th>
                 <th class="text-center">Fecha <br>del Partido</th>
+                <th class="text-center">Acción</th>
               </tr>
             </thead>
             <tbody>
@@ -64,8 +62,20 @@
                 <td class="text-center">{{ metric.intercepted_passes }}</td>
                 <td class="text-center">{{ metric.successful_passes }}</td>
                 <td class="text-center">{{ metric.performance_score || 'Sin Información' }}</td>
-                <td class="text-center">{{ metric.suggested_position || 'Sin Información' }}</td>
+                <td class="text-center">{{ getPositionLabel(metric.suggested_position) || 'Sin Información' }}</td>
                 <td class="text-center">{{ formatDate(metric.match_date) }}</td>
+                <td class="text-center"> 
+                  <div class="flex align-items-center">
+                    <button class="btn btn-link" @click="deleteMetric(metric.id)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="#9E0000" class="bi bi-trash3" viewBox="0 0 16 16">
+                          <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                      </svg>
+                    </button> 
+                    <div class="ms-6" v-if="loadingRows[metric.id]">
+                      <span class="loader justify-center"></span>
+                    </div>
+                  </div>
+                </td>
               </tr>
             </tbody>
           </table>    
@@ -73,8 +83,85 @@
       </div>
       </div>
     </div>
+
+    <!-- Create Metric -->
+  <div v-if="showCreate" class="card mt-3">
+    <div class="p-3 pb-0 card-header">
+      <h6 class="mb-0 text-center">Agregar Nueva Métrica</h6>
+        <div class="p-3 card-body">
+          <form @submit.prevent="addMetric">
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label for="metersCovered" class="form-label">Metros Recorridos</label>
+                <input
+                  type="number"
+                  id="metersCovered"
+                  class="form-control"
+                  v-model="metric.meters_covered"
+                  step="0.01"
+                  required
+                  placeholder="Ej: 12.50"
+                />
+              </div>
+              <div class="col-md-4">
+                <label for="goalsScored" class="form-label">Goles Anotados</label>
+                <input
+                  type="number"
+                  id="goalsScored"
+                  class="form-control"
+                  v-model="metric.goals_scored"
+                  required
+                  placeholder="Ej: 2"
+                />
+              </div>
+              <div class="col-md-4">
+                <label for="interceptedPasses" class="form-label">Pases Interceptados</label>
+                <input
+                  type="number"
+                  id="interceptedPasses"
+                  class="form-control"
+                  v-model="metric.intercepted_passes"
+                  required
+                  placeholder="Ej: 4"
+                />
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="successfulPasses" class="form-label">Pases Exitosos</label>
+                <input
+                  type="number"
+                  id="successfulPasses"
+                  class="form-control"
+                  v-model="metric.successful_passes"
+                  required
+                  placeholder="Ej: 30"
+                />
+              </div>
+              <div class="col-md-6">
+                <label for="" class="form-label">Fecha del Encuentro</label>
+                <flatpickr 
+                  class="form-control"
+                  v-model="metric.match_date"
+                  required 
+                  :config="{ enableTime: true, dateFormat: 'Y-m-d\\TH:i:S', time_24hr: true, }"/>
+                <p>Fecha seleccionada: {{ processDate(metric.match_date) }}</p>
+                
+              </div>
+            </div>
+            <div class="d-flex justify-content-end">
+              <button type="button" class="btn btn-secondary me-2" @click="showCreate = false">Cancelar</button>
+              <button type="submit" class="btn btn-primary" :disabled="loading" >Crear Métrica</button>
+              <div class="ms-3" v-if="loading">
+                  <span class="loader justify-center"></span>
+              </div>
+            </div>
+          </form>
+        </div>
+    </div>
   </div>
-  <div class="py-4 container-fluid">
+             </div>
+  <div v-if="!showCreate" class="py-4 container-fluid">
     <div class="mt-3 row">
       <div class="mt-4 col-12 offset-md-3 col-md-6 offset-xl-3 col-xl-6 mt-md-0">
         <profile-info-card
@@ -108,6 +195,7 @@
       </div>
     </div>
   </div>
+  
 </template>
 
 <script>
@@ -115,18 +203,6 @@
 import ProfileInfoCard from "./components/ProfileInfoCard.vue";
 // import SoftAvatar from "@/components/SoftAvatar.vue";
 import SoftButton from '../components/SoftButton.vue';
-import sophie from "@/assets/img/kal-visuals-square.jpg";
-import marie from "@/assets/img/marie.jpg";
-import ivana from "@/assets/img/ivana-square.jpg";
-import peterson from "@/assets/img/team-4.jpg";
-import nick from "@/assets/img/team-3.jpg";
-import img1 from "@/assets/img/home-decor-1.jpg";
-import img2 from "@/assets/img/home-decor-2.jpg";
-import img3 from "@/assets/img/home-decor-3.jpg";
-import team1 from "@/assets/img/team-1.jpg";
-import team2 from "@/assets/img/team-2.jpg";
-import team3 from "@/assets/img/team-3.jpg";
-import team4 from "@/assets/img/team-4.jpg";
 import {
   faFacebook,
   faTwitter,
@@ -137,12 +213,17 @@ import {
 import setNavPills from "@/assets/js/nav-pills.js";
 import setTooltip from "@/assets/js/tooltip.js";
 import MetricsService from '@/assets/js/metricsService.js';
+import UserService from '@/assets/js/userService.js';
+import flatPickr from "vue-flatpickr-component";
+import "flatpickr/dist/flatpickr.css";
 import axios from 'axios';
+import { DateTime } from 'luxon';
 
 axios.defaults.withCredentials = false;
 axios.defaults.baseURL = 'https://goalstats-api.onrender.com/api'
 
 const metricsService = new MetricsService();
+const userService = new UserService('https://goalstats-api.onrender.com/api');
 
 export default {
   name: "ProfileOverview",
@@ -153,22 +234,11 @@ export default {
     // DefaultProjectCard,
     // PlaceHolderCard,
     SoftButton,
+    flatpickr: flatPickr,
   },
   data() {
     return {
-      showMenu: false,
-      sophie,
-      marie,
-      ivana,
-      peterson,
-      nick,
-      img1,
-      team1,
-      team2,
-      team3,
-      team4,
-      img2,
-      img3,
+      showCreate: false,
       faFacebook,
       faTwitter,
       faInstagram,
@@ -179,61 +249,103 @@ export default {
       selectedDisciplina: {},
       disciplinas: [],
       metrics: {},
-      loading: true,
+      loading: false,
+      metric: {
+        athlete: null,
+        meters_covered: null,
+        goals_scored: null,
+        intercepted_passes: null,
+        successful_passes: null,
+        match_date: null,
+        sport: null,
+        performance_score: null,
+        suggested_position: null, 
+      },
+      positions: [
+        { value: 'FORWARD', label: 'Delantero' },
+        { value: 'MIDFIELDER', label: 'Mediocampista' },
+        { value: 'DEFENDER', label: 'Defensa' },
+        { value: 'GOALKEEPER', label: 'Portero' },
+      ],
+      loadingRows: {},
     };
   },
   methods:{
+    getPositionLabel(value) {
+      const position = this.positions.find(p => p.value === value);
+      return position ? position.label : 'Sin Información';
+    },
+    async loadMetrics() {
+      try {
+        await userService.usersData();
+        this.disciplinas = userService.disciplinas;
+        this.users = userService.users;
+
+        this.selectedUser = this.users.find(user => user.username === this.username);
+        this.metrics = await metricsService.getMetricsByAthlete(this.selectedUser.id);
+        this.metrics.forEach(metric => {
+          this.loadingRows[metric.id] = false;
+        });
+        this.selectedDisciplina = this.disciplinas.find(d => d.id === this.selectedUser.nombre_disciplina);
+
+        } catch (error) {
+          console.error('Error al obtener los datos', error);
+        }
+    },
+    processDate(selectedDate) {
+      const isoDate = DateTime.fromISO(selectedDate).toISO({ includeOffset: true });
+      return isoDate;
+    },
     formatDate(dateString) {
 
       const date = new Date(dateString);
 
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return date.toLocaleDateString('es-ES');
+    },
+    async addMetric(event) {
+        event.preventDefault();
+        this.loading = true;
+        const newMetric = {
+            athlete: this.selectedUser.id,
+            meters_covered: String(this.metric.meters_covered),
+            goals_scored: this.metric.goals_scored,
+            intercepted_passes: this.metric.intercepted_passes,
+            successful_passes: this.metric.successful_passes,
+            sport: this.selectedUser.nombre_disciplina,
+            match_date: this.processDate(this.metric.match_date),
+        };
 
-      return date.toLocaleDateString('es-ES', options);
+        try {
+            await metricsService.createMetric(newMetric);
+            event.target.reset();
+            await this.loadMetrics();
+            this.showCreate = false;
+            this.loading = false;
+            alert("Métrica creada con éxito");
+        } catch (error) {
+            this.loading = false;
+            console.error("Error al crear la métrica:", error);
+        }
+    },  
+    async deleteMetric(metricId) {
+      this.loadingRows[metricId] = true;
+      console.log('loader', this.loadingRows)
+      try {
+        await metricsService.deleteMetric(metricId);
+        await this.loadMetrics();
+        this.loadingRows[metricId] = false;
+        alert("Métrica eliminada con éxito");
+      } catch (error) {
+        this.loadingRows[metricId] = false;
+        console.error("Error al eliminar la métrica:", error);
+      }
     },
   },
   async mounted() {
     this.$store.state.isAbsolute = true;
     setNavPills();
     setTooltip(this.$store.state.bootstrap);
-    try {
-
-    const [response1, response2] = await Promise.all([
-      axios.get('https://goalstats-api.onrender.com/api/disciplines/'),
-      axios.get('https://goalstats-api.onrender.com/api/users/'),
-    ]);
-    
-    const disciplinas = response1.data;
-    const users = response2.data;
-    
-    // Buscar el usuario con el nombre de usuario almacenado en localStorage
-    const user = users.find(user => user.username === this.username);
-    this.metrics = await metricsService.getMetricsByAthlete(21);
-    console.log('Métricas del jugador:', this.metrics);
-    
-    if (user) {
-      console.log('Usuario encontrado:', user);
-      this.selectedUser = user;
-      console.log('Usuario seleccionado:', this.selectedUser);
-      // Buscar la disciplina correspondiente según el ID almacenado en el usuario
-      const disciplina = disciplinas.find(d => d.id === user.nombre_disciplina);
-
-      if (disciplina) {
-        this.selectedDisciplina = disciplina;
-        console.log('Disciplina seleccionada:', this.selectedDisciplina);
-      } else {
-        console.error('No se encontró la disciplina correspondiente para el usuario');
-      }
-
-    } else {
-      console.error('Usuario no encontrado');
-    }
-    } catch (error) {
-      console.error('Error al obtener los datos', error);
-    }
-
-
-    
+    await this.loadMetrics();
   },
   beforeUnmount() {
     this.$store.state.isAbsolute = false;
@@ -241,3 +353,76 @@ export default {
 
 };
 </script>
+
+<style scope>
+.loader {
+        transform: rotateZ(45deg);
+        perspective: 1000px;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        color: #f708a8;
+      }
+        .loader:before,
+        .loader:after {
+          content: '';
+          display: block;
+          position: absolute;
+          width: inherit;
+          height: inherit;
+          border-radius: 50%;
+          transform: rotateX(70deg);
+          animation: 1s spin linear infinite;
+        }
+        .loader:after {
+          color: #3b0066;
+          transform: rotateY(70deg);
+          animation-delay: .4s;
+        }
+
+      @keyframes rotate {
+        0% {
+          transform: translate(-50%, -50%) rotateZ(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotateZ(360deg);
+        }
+      }
+
+      @keyframes rotateccw {
+        0% {
+          transform: translate(-50%, -50%) rotate(0deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) rotate(-360deg);
+        }
+      }
+
+      @keyframes spin {
+        0%,
+        100% {
+          box-shadow: .2em 0px 0 0px currentcolor;
+        }
+        12% {
+          box-shadow: .2em .2em 0 0 currentcolor;
+        }
+        25% {
+          box-shadow: 0 .2em 0 0px currentcolor;
+        }
+        37% {
+          box-shadow: -.2em .2em 0 0 currentcolor;
+        }
+        50% {
+          box-shadow: -.2em 0 0 0 currentcolor;
+        }
+        62% {
+          box-shadow: -.2em -.2em 0 0 currentcolor;
+        }
+        75% {
+          box-shadow: 0px -.2em 0 0 currentcolor;
+        }
+        87% {
+          box-shadow: .2em -.2em 0 0 currentcolor;
+        }
+      }
+</style>

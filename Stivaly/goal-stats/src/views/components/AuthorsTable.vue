@@ -175,7 +175,7 @@
                 <div class="form-group">
                   <label for="userDiscipline">Disciplina</label>
                   <select v-model="selectedDisciplinaNombre" class="form-control" id="disciplinaSelect">
-                    <option v-for="(disciplina, index) in disciplinas" :key="index" :value="disciplina.nombre_disciplina">
+                    <option v-for="(disciplina, index) in disciplinas" :key="index" :value="disciplina.id">
                       {{ disciplina.nombre_disciplina }} - {{ disciplina.descripcion }}
                     </option>
                   </select>
@@ -254,16 +254,13 @@ export default {
       if (this.selectedDisciplina === 'todas') {
         return this.users;
       }
-
-      // Encuentra el ID de la disciplina seleccionada
       const disciplina = this.disciplinas.find(
         (d) => d.nombre_disciplina === this.selectedDisciplina
       );
       if (!disciplina) {
-        return []; // Si no se encuentra la disciplina, devuelve un array vacío
+        return []; 
       }
 
-      // Filtra los usuarios cuyo ID de disciplina coincida
       return this.users.filter((user) => user.nombre_disciplina === disciplina.id);
     },
   },
@@ -298,6 +295,8 @@ export default {
     },
     editUser(user) {
       this.selectedUser = { ...user }; 
+      this.selectedDisciplinaNombre = user.nombre_disciplina;
+      console.log(this.selectedDisciplinaNombre)
       const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editUserModal'));
       modal.show();
     },
@@ -313,11 +312,10 @@ export default {
           fecha_nacimiento: this.selectedUser.fecha_nacimiento,
           peso: this.selectedUser.peso,
           estatura: this.selectedUser.estatura,
-          nombre_disciplina: this.selectedUser.nombre_disciplina, // Relación con disciplina
+          nombre_disciplina: this.selectedDisciplinaNombre, // Relación con disciplina
           role: this.selectedUser.role,
         };
 
-        // Llama al servicio para actualizar el usuario
         const updatedUser = await userService.editUser(this.selectedUser.id, updatedData);
 
         if (updatedUser) {
@@ -328,7 +326,6 @@ export default {
 
           alert("Usuario actualizado con éxito.");
 
-          // Cierra el modal
           const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
           modal.hide();
         } else {
@@ -342,7 +339,6 @@ export default {
 
     async loadAndFilterUsers() {
       try {
-        // Carga los datos de usuarios y disciplinas
         await userService.usersData();
         this.users = userService.users;
         this.disciplinas = userService.disciplinas;
