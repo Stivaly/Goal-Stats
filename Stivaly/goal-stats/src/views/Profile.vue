@@ -29,7 +29,12 @@
           </div>
         </div>
         
-        <div class="mt-7 ms-6 col-auto text-start justify-content-center align-items-center">
+        
+      </div>
+    </div>
+    <div v-if="!showCreate" class="container-fluid mt-2">
+      <div class="card p-3">
+        <div class="ms-6 col-auto text-start justify-content-center align-items-center">
           <div class="d-flex align-items-center justify-content-between">
             <h6 class="mb-0">Métricas</h6>
             <soft-button
@@ -41,17 +46,18 @@
               > Agregar Nueva Métrica </soft-button>
           </div>
         
-        <div v-if="!showCreate" class="table-responsive">
+        </div>
+        <div  class="table-responsive">
           <table class="table border border-secondary-subtle  mt-3">
             <thead class="">
               <tr>
                 <th class="text-center">Metros <br>Recorridos</th>
                 <th class="text-center">Goles <br>Anotados</th>
-                <th class="text-center">Pases <br>Interceptados</th>
+                <th class="text-center ">Pases <br>Interceptados</th>
                 <th class="text-center">Pases <br>Exitosos</th>
                 <th class="text-center">Puntuación <br>de Rendimiento</th>
                 <th class="text-center">Posición <br>Sugerida</th>
-                <th class="text-center">Fecha <br>del Partido</th>
+                <th class="text-center d-md-none d-lg-none d-xxl-table-cell">Fecha <br>del Partido</th>
                 <th class="text-center">Acción</th>
               </tr>
             </thead>
@@ -59,28 +65,29 @@
               <tr v-for="metric in metrics" :key="metric.id">
                 <td class="text-center" >{{ metric.meters_covered }} m</td>
                 <td class="text-center">{{ metric.goals_scored }}</td>
-                <td class="text-center">{{ metric.intercepted_passes }}</td>
+                <td class="text-center ">{{ metric.intercepted_passes }}</td>
                 <td class="text-center">{{ metric.successful_passes }}</td>
                 <td class="text-center">{{ metric.performance_score || 'Sin Información' }}</td>
                 <td class="text-center">{{ getPositionLabel(metric.suggested_position) || 'Sin Información' }}</td>
-                <td class="text-center">{{ formatDate(metric.match_date) }}</td>
+                <td class="text-center d-md-none d-lg-none d-xxl-table-cell">{{ formatDate(metric.match_date) }}</td>
                 <td class="text-center"> 
-                  <div class="flex align-items-center">
-                    <button class="btn btn-link" @click="deleteMetric(metric.id)">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="#9E0000" class="bi bi-trash3" viewBox="0 0 16 16">
+                  <button class="btn btn-link" @click="deleteMetric(metric.id)">
+                      <div class="d-flex align-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="#9E0000" class="bi bi-trash3 me-2" viewBox="0 0 16 16">
                           <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
-                      </svg>
+                        </svg>
+                        <div>
+                          <span v-if="loadingRows[metric.id]" class="loader" style="width: 15px; height: 15px; display: inline-block;"></span>
+                        </div>
+                      
+                      </div>
                     </button> 
-                    <div class="ms-6" v-if="loadingRows[metric.id]">
-                      <span class="loader justify-center"></span>
-                    </div>
-                  </div>
                 </td>
               </tr>
             </tbody>
           </table>    
         </div>
-      </div>
+
       </div>
     </div>
 
