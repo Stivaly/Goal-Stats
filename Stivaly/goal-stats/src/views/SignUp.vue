@@ -30,14 +30,18 @@
             <form role="form">
               <div class="mb-3">
                 <input
-                id="username"
-                type="text"
-                placeholder="Nombre de Usuario"
-                v-model="form.username"
-                class="form-control"
-                required
-                />
-                <span v-if="isLimitReached" class="limit-warning">Has alcanzado el límite de 30 caracteres.</span>
+                  id="username"
+                  type="text"
+                  placeholder="Nombre de Usuario"
+                  v-model="form.username"
+                  class="form-control"
+                  required
+                  @input="validateInputs"
+                  />
+                  <ul v-if="errors.username">
+                    <li v-for="(error, index) in errors.username" :key="index" class="text-danger">{{ error }}</li>
+                  </ul>
+                  <span v-if="isLimitReached" class="limit-warning">Has alcanzado el límite de 30 caracteres.</span>
               </div>
               <div class="mb-3">
                 <input
@@ -47,7 +51,11 @@
                   v-model="form.email"
                   class="form-control"
                   required
+                  @input="validateInputs"
                 />
+                <ul v-if="errors.email">
+                  <li v-for="(error, index) in errors.email" :key="index" class="text-danger">{{ error }}</li>
+                </ul>
               </div>
               <div class="mb-3">
                 <input
@@ -57,9 +65,12 @@
                   v-model="form.password"
                   class="form-control"
                   required
-                  @input="validatePassword"
+                  @input="validateInputs"
                 />
-                <span v-if="!isPasswordValid" class="text-danger text-center">La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial.</span>
+                <ul v-if="errors.password">
+                  <li v-for="(error, index) in errors.password" :key="index" class="text-danger">{{ error }}</li>
+                </ul>
+
               </div>
               <div class="mb-3">
                 <select
@@ -165,6 +176,7 @@ export default {
       selectedRole: '',
       isPasswordValid: true,
       loading: false,
+      errors: {},
     }
   },
   computed: {
@@ -173,21 +185,66 @@ export default {
     },
   },
   watch: {
-    'form.password': function() {
-      this.validatePassword();
+    'form': function() {
+      this.validateInputs();
     },
   },
   methods: {
     ...mapMutations(["toggleEveryDisplay", "toggleHideConfig"]),
-    validatePassword() {
+    validateInputs() {
+      const errors = {};
+      const username = this.form.username;
+      if (!username) {
+        errors.username = ["El nombre es obligatorio."];
+      } else if (username.length < 3) {
+        errors.username = ["El nombre debe tener al menos 3 caracteres."];
+      }
+      const email = this.form.email;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email) {
+        errors.email = ["El correo es obligatorio."];
+      } else if (!emailRegex.test(email)) {
+        errors.email = ["El correo no tiene un formato válido."];
+      }
       const password = this.form.password;
+      const passwordErrors = [];
       const hasUpperCase = /[A-Z]/.test(password);
       const hasLowerCase = /[a-z]/.test(password);
       const hasNumber = /\d/.test(password);
       const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
       const isValidLength = password.length >= 8;
-      this.isPasswordValid = hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar && isValidLength;
+
+      if (!password) {
+        passwordErrors.push("La contraseña es obligatoria.");
+      }
+      if (!hasUpperCase) {
+        passwordErrors.push("La contraseña debe tener al menos una letra mayúscula.");
+      }
+      if (!hasLowerCase) {
+        passwordErrors.push("La contraseña debe tener al menos una letra minúscula.");
+      }
+      if (!hasNumber) {
+        passwordErrors.push("La contraseña debe tener al menos un número.");
+      }
+      if (!hasSpecialChar) {
+        passwordErrors.push("La contraseña debe tener al menos un carácter especial.");
+      }
+      if (!isValidLength) {
+        passwordErrors.push("La contraseña debe tener al menos 8 caracteres.");
+      }
+
+      if (passwordErrors.length > 0) {
+        errors.password = passwordErrors;
+      }
+
+      // Asignar errores a una variable reactiva
+      this.errors = errors;
+
+      // Forzar actualización si es necesario
       this.$forceUpdate();
+
+      // Retornar si el formulario es válido
+      return Object.keys(errors).length === 0;
     },
     async submitForm() {
       this.form.role = this.selectedRole;
@@ -198,16 +255,10 @@ export default {
         
         if (response.status === 201) {
           alert('Registro exitoso');
-          this.$router.push('/sign-in'); // Redirige a la página de dashboard o a donde sea necesario
-        } else if (response.status === 400) {
-          alert('Solicitud incorrecta. Verifique los campos ingresados.');
-        } else if (response.status === 409) {
-          alert('El usuario ya está registrado. Por favor, utiliza un usuario diferente.')
-        };
+          this.$router.push('/sign-in'); 
+        } 
       } catch (error) {
         this.loading = false;
-        console.error('Error al registrar:', error);
-        alert('Error en el registro, intenta nuevamente.');
       };
     },
   },

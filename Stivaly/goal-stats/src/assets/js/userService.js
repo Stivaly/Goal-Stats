@@ -65,15 +65,14 @@ class UserService {
                     throw new Error("La edad no puede ser menor a 7 años.");
                 }
             }
-            console.log('userData:', userData);
+
             const response = await this.axiosInstance.patch(`/users/${userId}/`, userData);
     
-            console.log('Usuario actualizado:', response.data);
+            alert('Usuario actualizado con éxito.');
     
-            return response.data; // Retorna los datos del usuario actualizado
+            return {response: response.data, success: true}; 
         } catch (error) {
-            console.error('Error al editar el usuario:', error);
-            throw error; // Lanza el error para manejarlo en el lugar donde se llama este método
+            alert('Error al editar el usuario:', error.message);
         }
     }
 

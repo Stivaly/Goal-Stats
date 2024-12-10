@@ -73,8 +73,8 @@
 
             </tr>
           </thead>
-          <tbody>
-            <tr v-for="user in filteredUsers" :key="user.username">
+          <tbody v-if="paginatedData.length">
+            <tr v-for="user in paginatedData" :key="user.username">
               <td class="text-center ">
                 <div class="d-flex px-2 py-1 ms-5 justify-content-start align-items-center">
                   <div>
@@ -139,7 +139,22 @@
               </td>
             </tr>
           </tbody>
+          <tbody v-else>
+            <tr>
+              <td colspan="8" class="text-center">No se encontraron resultados</td>
+            </tr>
+          </tbody>
         </table>
+        <!-- Paginación -->
+         <div class="container">
+          <div class="d-flex justify-content-center ">
+            <SoftPagination
+              :total-items="filteredUsers.length"
+              :items-per-page="rowsPerPage"
+              @page-changed="changePage"
+            />
+          </div>
+          </div>
         <!-- Modal for Editing User -->
         <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
@@ -216,6 +231,7 @@ import img4 from "../../assets/img/team-3.jpg";
 import img5 from "../../assets/img/team-2.jpg";
 import img6 from "../../assets/img/team-4.jpg";
 import UserService from '@/assets/js/userService.js';
+import SoftPagination from '@/components/SoftPagination.vue';
 
 const userService = new UserService('https://goalstats-api.onrender.com/api');
 
@@ -243,11 +259,19 @@ export default {
       idDisciplina: 0,
       selectedDisciplina: "todas",
       loading: false,
+      currentPage: 1,
+      rowsPerPage: 10,
     };
+  },
+  watch: {
+    selectedDisciplina() {
+      this.currentPage = 1; 
+    },
   },
   components: {
     SoftAvatar,
     SoftBadge,
+    SoftPagination,
   },
   computed: {
     filteredUsers() {
@@ -262,6 +286,10 @@ export default {
       }
 
       return this.users.filter((user) => user.nombre_disciplina === disciplina.id);
+    },
+    paginatedData() {
+      const start = (this.currentPage - 1) * this.rowsPerPage;
+      return this.filteredUsers.slice(start, start + this.rowsPerPage);
     },
   },
   methods: {
@@ -296,14 +324,13 @@ export default {
     editUser(user) {
       this.selectedUser = { ...user }; 
       this.selectedDisciplinaNombre = user.nombre_disciplina;
-      console.log(this.selectedDisciplinaNombre)
       const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editUserModal'));
       modal.show();
     },
     async updateUser() {
       try {
         if (!this.selectedUser || !this.selectedUser.id) {
-          throw new Error("No se ha seleccionado un usuario válido.");
+          alert("No se ha seleccionado un usuario válido.");
         }
 
         const updatedData = {
@@ -312,7 +339,7 @@ export default {
           fecha_nacimiento: this.selectedUser.fecha_nacimiento,
           peso: this.selectedUser.peso,
           estatura: this.selectedUser.estatura,
-          nombre_disciplina: this.selectedDisciplinaNombre, // Relación con disciplina
+          nombre_disciplina: this.selectedDisciplinaNombre, 
           role: this.selectedUser.role,
         };
 
@@ -324,8 +351,6 @@ export default {
             this.users[index] = updatedUser;
           }
 
-          alert("Usuario actualizado con éxito.");
-
           const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
           modal.hide();
         } else {
@@ -333,10 +358,8 @@ export default {
         }
       } catch (error) {
         console.error("Error al actualizar el usuario:", error);
-        alert("Hubo un problema al actualizar el usuario.");
       }
     },
-
     async loadAndFilterUsers() {
       try {
         await userService.usersData();
@@ -346,7 +369,6 @@ export default {
         console.error('Error al cargar los datos:', error.message);
       }
     },
-
     getDisciplinaName(disciplinaId) {
       const disciplina = this.disciplinas.find((d) => d.id === disciplinaId);
       return disciplina ? disciplina.nombre_disciplina : 'Sin asignar';
@@ -354,7 +376,6 @@ export default {
     getEstado(isActive) {
       return isActive ? 'Activo' : 'Inactivo';
     },
-
     saveUserChanges() {
       const index = this.users.findIndex(u => u.id === this.selectedUser.id);
       if (index !== -1) {
@@ -364,6 +385,9 @@ export default {
       const modalElement = document.getElementById('editUserModal');
       const modal = bootstrap.Modal.getInstance(modalElement);
       modal.hide();
+    },
+    changePage(page) {
+      this.currentPage = page; 
     },
 
     mostrarValor(valor) {

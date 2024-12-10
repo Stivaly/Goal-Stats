@@ -19,8 +19,17 @@ class AuthService {
       delete form.password;
       return response; 
     } catch (error) {
-      console.error('Error al registrar:', error);
-      throw error; 
+      if (error.response) {
+        const serverError = error.response.data;
+        if (serverError.username) {
+          alert(serverError.username);
+        } else {
+          throw new Error('Error desconocido al registrar el usuario.');
+        }
+      } else {
+        console.error('Error inesperado:', error);
+        throw new Error('Error en la conexión con el servidor.');
+      }
     }
   }
 
