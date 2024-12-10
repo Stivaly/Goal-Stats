@@ -84,6 +84,9 @@
                     {{ role.label }}
                   </option>
                 </select>
+                <ul v-if="errors.role">
+                  <li v-for="(error, index) in errors.role" :key="index" class="text-danger">{{ error }}</li>
+                </ul>
               </div>
               <soft-checkbox
                 id="flexCheckDefault"
@@ -237,13 +240,12 @@ export default {
         errors.password = passwordErrors;
       }
 
-      // Asignar errores a una variable reactiva
+      const selectedRole = this.selectedRole;
+      if (!selectedRole) {
+        errors.role = ["Debe seleccionar un rol."];
+      }
       this.errors = errors;
-
-      // Forzar actualización si es necesario
       this.$forceUpdate();
-
-      // Retornar si el formulario es válido
       return Object.keys(errors).length === 0;
     },
     async submitForm() {
