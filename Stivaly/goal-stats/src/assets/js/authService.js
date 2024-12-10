@@ -49,8 +49,17 @@ class AuthService {
       }
       return response;
     } catch (error) {
-        console.error('Error al registrar:', error);
-        throw error;
+      if (error.response) {
+        const serverError = error.response.data;
+        if (serverError.error == 'Invalid Credentials') {
+          alert("Usuario o contraseña incorrectos.");
+        } else {
+          throw new Error('Error desconocido al registrar el usuario.');
+        }
+      } else {
+        console.error('Error inesperado:', error);
+        throw new Error('Error en la conexión con el servidor.');
+      }
     }
 }
 }

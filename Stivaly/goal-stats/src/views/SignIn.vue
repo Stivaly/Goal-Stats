@@ -28,7 +28,11 @@
                       v-model="form.username"
                       class="form-control"
                       required
+                      @input="validateInputs"
                       />
+                    <ul v-if="errors.username">
+                      <li v-for="(error, index) in errors.username" :key="index" class="text-danger">{{ error }}</li>
+                    </ul>
                     <label>Contraseña</label>
                     <input
                       id="password"
@@ -37,11 +41,12 @@
                       v-model="form.password"
                       class="form-control"
                       required
+                      @input="validateInputs"
                     />
-                    <soft-switch id="rememberMe" name="rememberMe" checked>
-                      Recordarme
-                    </soft-switch>
-                    <div class="text-center">
+                    <ul v-if="errors.password">
+                      <li v-for="(error, index) in errors.password" :key="index" class="text-danger">{{ error }}</li>
+                    </ul>
+                    <div class="text-center mt-2">
                       <div class="d-flex justify-content-center" v-if="loading">
                         <span class="loader justify-center"></span>
                       </div>
@@ -51,7 +56,7 @@
                         variant="gradient"
                         color="primary"
                         full-width
-                        :disabled="loading"
+                        :disabled="loading || !isFormValid"
                         @click="submitForm"
                         >Iniciar Sesión
                       </soft-button>
@@ -95,10 +100,6 @@
 </template>
 
 <script>
-// import Navbar from "@/examples/PageLayout/Navbar.vue";
-// import AppFooter from "@/examples/PageLayout/Footer.vue";
-// import SoftInput from "@/components/SoftInput.vue";
-import SoftSwitch from "@/components/SoftSwitch.vue";
 import SoftButton from "@/components/SoftButton.vue";
 const body = document.getElementsByTagName("body")[0];
 import { mapMutations } from "vuex";
@@ -109,10 +110,6 @@ const authService = new AuthService('https://goalstats-api.onrender.com/api');
 export default {
   name: "SignIn",
   components: {
-    // Navbar,
-    // AppFooter,
-    // SoftInput,
-    SoftSwitch,
     SoftButton,
   },
   created() {
@@ -133,16 +130,40 @@ export default {
         },
         errorMessage: '',
         loading: false,
+        errors: {},
       }
     },
-    mounted() {
-      if (!this.isTokenExpired() && localStorage.getItem('authToken')) {
-        this.$router.push('/dashboard');
-      }
-      
+  mounted() {
+    if (!this.isTokenExpired() && localStorage.getItem('authToken')) {
+      this.$router.push('/dashboard');
+    }
+  },
+  computed: {
+    isFormValid() {
+      return Object.keys(this.errors).length === 0;
+    }
+  },
+  watch: {
+    'form': function() {
+      this.validateInputs();
     },
+  },
   methods: {
     ...mapMutations(["toggleEveryDisplay", "toggleHideConfig"]),
+    validateInputs() {
+      const errors = {};
+      const username = this.form.username;
+      if (!username) {
+        errors.username = ["El nombre es obligatorio."];
+      } 
+      const password = this.form.password;
+      if (!password) {
+        errors.password = ["La contraseña es obligatoria."];
+      }
+      this.errors = errors;
+      this.$forceUpdate();
+      return Object.keys(errors).length === 0;
+    },
     async submitForm() {
         try {
           this.loading = true;
@@ -150,20 +171,9 @@ export default {
           if (response.status === 200) {
             alert('Registro exitoso'); 
             this.$router.push('/dashboard/'); 
-          } else if (response.status === 400) {
-            this.errorMessage = 'Datos inválidos. Por favor, Verifica tus credenciales.';
-          } else if (response.status === 401) {
-            this.errorMessage = 'No autorizado. Verifica tus credenciales.';
-          } else if (response.status === 500) {
-            this.errorMessage = 'Error del servidor. Contacta al administrador del sistema.';
-          } else {
-            this.errorMessage = `Error ${response.status}: ${response.data.message}`;
-          }
-
+          } 
         } catch (error) {
           this.loading = false;
-          console.error('Error al registrar:', error);
-          alert('Ocurrió un error inesperado. Intenta nuevamente más tarde.');
         };
       },
       isTokenExpired() {

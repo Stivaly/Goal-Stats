@@ -100,7 +100,7 @@
                   full-width
                   variant="gradient"
                   class="my-3 mb-2"
-                  :disabled="loading"
+                  :disabled="loading || !isFormValid"
                   @click="submitForm"
                   > Registrarse </soft-button
                 >
@@ -175,6 +175,9 @@ export default {
   computed: {
     isLimitReached() {
       return this.form.username.length >= 30;
+    },
+    isFormValid() {
+      return Object.keys(this.errors).length === 0;
     },
   },
   watch: {
