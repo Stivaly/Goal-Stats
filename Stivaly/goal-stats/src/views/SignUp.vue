@@ -78,6 +78,7 @@
                   v-model="selectedRole"
                   class="form-control"
                   required
+                  @change="validateInputs"
                 >
                   <option value="" disabled>Seleccione un Rol</option>
                   <option v-for="role in roles" :key="role.value" :value="role.value">
@@ -88,17 +89,6 @@
                   <li v-for="(error, index) in errors.role" :key="index" class="text-danger">{{ error }}</li>
                 </ul>
               </div>
-              <soft-checkbox
-                id="flexCheckDefault"
-                username="flexCheckDefault"
-                class="font-weight-light"
-                checked
-              >
-                Acepto los
-                <a href="javascript:;" class="text-primary font-weight-bolder"
-                  >Términos y Condiciones</a
-                >
-              </soft-checkbox>
               
               <div class="text-center">
                 <div class="d-flex justify-content-center" v-if="loading">
@@ -136,7 +126,7 @@
 // import Navbar from "@/examples/PageLayout/Navbar.vue";
 // import AppFooter from "@/examples/PageLayout/Footer.vue";
 // import SoftInput from "@/components/SoftInput.vue";
-import SoftCheckbox from "@/components/SoftCheckbox.vue";
+//import SoftCheckbox from "@/components/SoftCheckbox.vue";
 import SoftButton from "@/components/SoftButton.vue";
 // import SoftList from "@/components/softList.vue";
 import AuthService from '@/assets/js/authService.js';
@@ -150,7 +140,7 @@ export default {
     // Navbar,
     // AppFooter,
     // SoftInput,
-    SoftCheckbox,
+    //SoftCheckbox,
     SoftButton,
     // SoftList,
   },
@@ -235,7 +225,6 @@ export default {
       if (!isValidLength) {
         passwordErrors.push("La contraseña debe tener al menos 8 caracteres.");
       }
-
       if (passwordErrors.length > 0) {
         errors.password = passwordErrors;
       }
