@@ -24,7 +24,7 @@
         <!-- Nombre -->
         <li class="pt-0 text-sm border-0 list-group-item ps-0">
           <strong class="text-dark">Nombre:</strong> &nbsp;
-          <span v-if="!isEditing">{{ editableInfo.nombre }}</span>
+          <span v-if="!isEditing">{{ editableInfo.nombre || 'Sin información' }}</span>
           <input
             v-else
             v-model="editableInfo.nombre"
@@ -35,7 +35,7 @@
         <!-- Apellido -->
         <li class="text-sm border-0 list-group-item ps-0">
           <strong class="text-dark">Apellido:</strong> &nbsp;
-          <span v-if="!isEditing">{{ editableInfo.apellido }}</span>
+          <span v-if="!isEditing">{{ editableInfo.apellido || 'Sin información' }}</span>
           <input
             v-else
             v-model="editableInfo.apellido"
@@ -46,7 +46,7 @@
         <!-- Fecha de Nacimiento -->
         <li class="text-sm border-0 list-group-item ps-0">
           <strong class="text-dark">Fecha de Nacimiento:</strong> &nbsp;
-          <span v-if="!isEditing">{{ editableInfo.fecha_nacimiento }}</span>
+          <span v-if="!isEditing">{{ editableInfo.fecha_nacimiento || 'Sin información' }}</span>
           <input
             v-else
             v-model="editableInfo.fecha_nacimiento"
@@ -56,7 +56,7 @@
         <!-- Peso -->
         <li class="text-sm border-0 list-group-item ps-0">
           <strong class="text-dark">Peso:</strong> &nbsp;
-          <span v-if="!isEditing">{{ editableInfo.peso }}</span>
+          <span v-if="!isEditing">{{ editableInfo.peso || 'Sin información' }}</span>
           <input
             v-else
             v-model="editableInfo.peso"
@@ -67,7 +67,7 @@
         <!-- Estatura -->
         <li class="text-sm border-0 list-group-item ps-0">
           <strong class="text-dark">Estatura:</strong> &nbsp;
-          <span v-if="!isEditing">{{ editableInfo.estatura }}</span>
+          <span v-if="!isEditing">{{ editableInfo.estatura || 'Sin información' }}</span>
           <input
             v-else
             v-model="editableInfo.estatura"
