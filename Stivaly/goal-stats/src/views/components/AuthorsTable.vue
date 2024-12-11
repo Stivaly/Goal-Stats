@@ -156,7 +156,7 @@
           </div>
           </div>
         <!-- Modal for Editing User -->
-        <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
+        <div v-if="selectedUser && selectedUser.id" ref="editUserModal" class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
               <div class="modal-header">
@@ -324,8 +324,10 @@ export default {
     editUser(user) {
       this.selectedUser = { ...user }; 
       this.selectedDisciplinaNombre = user.nombre_disciplina;
-      const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editUserModal'));
-      modal.show();
+      this.$nextTick(() => {
+        const modal = bootstrap.Modal.getOrCreateInstance(this.$refs.editUserModal);
+        modal.show();
+      });
     },
     async updateUser() {
       try {
@@ -346,12 +348,13 @@ export default {
         const updatedUser = await userService.editUser(this.selectedUser.id, updatedData);
 
         if (updatedUser) {
-          const index = this.users.findIndex(user => user.id === this.selectedUser.id);
+          this.loadAndFilterUsers();
+          const index = this.filteredUsers.findIndex(user => user.id === updatedUser.id);
           if (index !== -1) {
-            this.users[index] = updatedUser;
+            const page = Math.floor(index / this.rowsPerPage) + 1;
+            this.currentPage = page;
           }
-
-          const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+          const modal = bootstrap.Modal.getInstance(this.$refs.editUserModal);
           modal.hide();
         } else {
           throw new Error("El servidor no devolvió una respuesta válida.");
@@ -382,8 +385,7 @@ export default {
         this.users.splice(index, 1, this.selectedUser);
       }
       this.selectedUser = null;
-      const modalElement = document.getElementById('editUserModal');
-      const modal = bootstrap.Modal.getInstance(modalElement);
+      const modal = bootstrap.Modal.getInstance(this.$refs.editUserModal);
       modal.hide();
     },
     changePage(page) {
