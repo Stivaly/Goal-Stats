@@ -24,12 +24,51 @@ class UserService {
         };
     }
 
+    async usersCount() {
+        try {
+            await this.usersData(); 
+            return this.users.length; 
+          } catch (error) {
+            console.error('Error al contar usuarios:', error);
+            return 0; 
+          }
+    }
+
+    async usersCountByIsActive() {
+        try {
+            await this.usersData(); 
+            return this.users.filter(user => user.is_active === true).length; 
+          } catch (error) {
+            console.error('Error al contar usuarios:', error);
+            return 0; 
+          }
+    }
+
+    async usersCountByRole() {
+        try {
+            await this.usersData(); 
+            const roles = ['SUPER_ADMIN', 'ADMIN', 'COACH', 'PLAYER'];
+            const roleCounts = roles.reduce((acc, role) => {
+                acc[role] = this.users.filter(user => user.role === role).length;
+                return acc;
+              }, {});
+            return roleCounts;
+          } catch (error) {
+            console.error('Error al contar usuarios:', error);
+            return {
+                SUPER_ADMIN: 0,
+                ADMIN: 0,
+                COACH: 0,
+                PLAYER: 0,
+              }; 
+          }
+    }
+
     calcularEdad(fechaNacimiento) {
         const hoy = new Date();
         const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
         const mes = hoy.getMonth() - fechaNacimiento.getMonth();
     
-        // Si aún no es el cumpleaños este año, restar 1
         if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
             return edad - 1;
         }
@@ -163,6 +202,28 @@ class UserService {
         }
     }
     
+    async distributeAgeGroups() {
+        const ageRanges = {
+            "18-25 años": 0,
+            "26-35 años": 0,
+            "36-45 años": 0,
+            "46+ años": 0,
+        };
+        await this.usersData();
+        this.users.map(user => {
+            const edad = this.calcularEdad(new Date(user.fecha_nacimiento));
+            if (edad >= 18 && edad <= 25) {
+                ageRanges["18-25 años"]++;
+            } else if (edad >= 26 && edad <= 35) {
+                ageRanges["26-35 años"]++;
+            } else if (edad >= 36 && edad <= 45) {
+                ageRanges["36-45 años"]++;
+            } else {
+                ageRanges["46+ años"]++;
+            }
+        });
+        return ageRanges;
+    }
 }
 
 export default UserService;

@@ -4,7 +4,7 @@
       <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
         <mini-statistics-card
           title="Usuarios Totales"
-          value="327"
+          :value="totalUsers"
           :percentage="{
             value: '+505%',
             color: 'text-primary',
@@ -19,7 +19,7 @@
       <div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
         <mini-statistics-card
           title="Usuarios En Línea"
-          value="30"
+          :value="totalUsersActive"
           :percentage="{
             value: '+3%',
             color: 'text-primary',
@@ -52,18 +52,6 @@
         <div class="card">
           <div class="card-body p-3">
             <div class="row">
-              <div class="col-lg-4">
-                <div class="d-flex flex-column h-100">
-                  <p class="mb-1 pt-2 text-bold">Conexiones al Servicio</p>
-                  <h5 class="font-weight-bolder">Tráfico</h5>
-                  <br><br><br>
-                  <div class="position-relative top-0 start-50 translate-middle-x text-center">
-                    <i class="fa fa-arrow-up text-primary"></i>
-                    <span class="font-weight-bold">4% más</span> en 2024
-                  </div>
-                
-                </div>
-              </div>
               
                 <div class="border-radius-lg h-100">
                   <img
@@ -73,32 +61,11 @@
                   />
 
                   <div class="card z-index-2">
-
-                    <gradient-line-chart
-                        id="chart-line"
-                        :chart="{
-                          labels: [
-                            'Apr',
-                            'May',
-                            'Jun',
-                            'Jul',
-                            'Aug',
-                            'Sep',
-                            'Oct',
-                            'Nov',
-                            'Dec',
-                          ],
-                          datasets: [
-                            {
-                              label: '2024',
-                              data: [50, 40, 300, 220, 500, 250, 400, 230, 500],
-                            },
-                            {
-                              label: '2023',
-                              data: [30, 90, 40, 140, 290, 290, 340, 230, 400],
-                            },
-                          ],
-                        }"
+                      <BarChart
+                        v-if="chartData.datasets"
+                        :chartData="chartData"
+                        title="Usuarios por Rol"
+                        description="Distribución actual de usuarios por rol en el sistema"
                       />
                   </div>
 
@@ -114,34 +81,19 @@
         <div class="card z-index-2">
           <div class="p-3 card-body">
             <reports-bar-chart
+              v-if="chartData2.datasets"
               id="chart-bar"
-              title="Usuarios Activos"
-              description="(<strong class='text-success'>+23%</strong>) que la semana pasada"
-              :chart="{
-                labels: [
-                  'Apr',
-                  'May',
-                  'Jun',
-                  'Jul',
-                  'Aug',
-                  'Sep',
-                  'Oct',
-                  'Nov',
-                  'Dec',
-                ],
-                datasets: {
-                  label: 'Sales',
-                  data: [450, 200, 100, 220, 500, 100, 400, 230, 500],
-                },
-              }"
+              title="Usuarios por Edad"
+              description="Distribución actual de usuarios por edad en el sistema"
+              :chart="chartData2"
               :items="[
                 {
                   icon: {
                     color: 'primary',
                     component: faUsers,
                   },
-                  label: 'users',
-                  progress: { content: '37K', percentage: 60 },
+                  label: 'usuarios',
+                  progress: { content: totalUsers, percentage: 60 },
                 },
                 {
                   icon: { color: 'info', component: faHandPointer },
@@ -157,9 +109,11 @@
   </div>
 </template>
 <script>
+import UserService from '@/assets/js/userService.js';
 import MiniStatisticsCard from "@/examples/Cards/MiniStatisticsCard.vue";
 import ReportsBarChart from "@/examples/Charts/ReportsBarChart.vue";
-import GradientLineChart from "@/examples/Charts/GradientLineChart.vue";
+//import GradientLineChart from "@/examples/Charts/GradientLineChart.vue";
+import BarChart  from "@/examples/Charts/BarChart.vue";
 // import TimelineList from "./components/TimelineList.vue";
 // import TimelineItem from "./components/TimelineItem.vue";
 // import ProjectsCard from "./components/ProjectsCard.vue";
@@ -173,6 +127,9 @@ import {
   faCreditCard,
   faScrewdriverWrench,
 } from "@fortawesome/free-solid-svg-icons";
+
+const userService = new UserService('https://goalstats-api.onrender.com/api');
+
 export default {
   name: "dashboard-default",
   data() {
@@ -212,37 +169,69 @@ export default {
           flag: BR,
         },
       },
+      totalUsers: 0,
+      totalUsersActive: 0,
+      chartData: {},
+      chartData2: {},
+      roleCounts: {
+        SUPER_ADMIN: 0,
+        ADMIN: 0,
+        COACH: 0,
+        PLAYER: 0,
+      },
     };
   },
   components: {
     MiniStatisticsCard,
     ReportsBarChart,
-    GradientLineChart,
+    //GradientLineChart,
+    BarChart,
     // ProjectsCard,
     // TimelineList,
     // TimelineItem,
   },
-  mounted() {
+  async mounted() {
     if (this.isTokenExpired()) {
         localStorage.removeItem('authToken');
         localStorage.removeItem('tokenExpiration');
-        console.log('El token ha expirado y ha sido eliminado.');
-
         this.$router.push('/sign-in'); 
     }
 
-    const token = localStorage.getItem('authToken');
-    console.log('Sesion iniciada con token:', token);
+    this.totalUsers = await userService.usersCount();
+    this.totalUsersActive = await userService.usersCountByIsActive();
+    this.roleCounts = await userService.usersCountByRole();
+    console.log(this.roleCounts.SUPER_ADMIN);
+    this.intervalId = setInterval(() => {
+      console.log("refrescando")
+    }, 30000);
+
+    this.chartData = {
+      labels: ["SUPER ADMIN", "ADMIN", "ENTRENADOR", "DEPORTISTA"], 
+      datasets: [
+        {
+          label: "Cantidad",
+          data: [this.roleCounts.SUPER_ADMIN, this.roleCounts.ADMIN, this.roleCounts.COACH, this.roleCounts.PLAYER], 
+        },
+      ],
+      colors: ["#17c1e8", "#cb0c9f", "#82d616", "#FBC02D"],
+    };
+    const ageGroups = await userService.distributeAgeGroups();
+    this.chartData2 = {
+      labels: Object.keys(ageGroups),
+      datasets: {
+        label: 'Usuarios por Edad',
+        data: Object.values(ageGroups),
+        },
+      };
   },
   methods: {
     isTokenExpired() {
         const expiration = localStorage.getItem('tokenExpiration');
-        console.log('Fecha de expiración del token:', expiration);
         if (!expiration) return true;
-
         const now = new Date();
-        return now > new Date(expiration); // Retorna true si ya expiró
+        return now > new Date(expiration); 
     },
+    
   },
 };
 </script>
