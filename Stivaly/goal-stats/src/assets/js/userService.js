@@ -76,42 +76,49 @@ class UserService {
     }
 
     async editUser(userId, userData) {
+        if (!userData.nombre || !userData.nombre.trim()) {
+            alert("El nombre es obligatorio.");
+            return;
+        } 
+        if (!userData.apellido || !userData.apellido.trim()) {
+            alert("El apellido es obligatorio.");
+            return;
+        }
+        if (userData.peso !== undefined) {
+            const peso = parseFloat(userData.peso);
+            if (isNaN(peso) || peso < 15 || peso > 150) {
+                alert("El peso es obligatorio y debe estar entre 15 kg y 150 kg.");
+                return;
+            }
+        }
+        if (userData.estatura !== undefined) {
+            const estatura = parseFloat(userData.estatura);
+            if (isNaN(estatura) || estatura < 50 || estatura > 220) {
+                alert("La estatura es obligatoria y debe ser un número positivo y mayor o igual a 50 cm.");
+                return;
+            }
+        }
+        if (userData.fecha_nacimiento !== undefined) {
+            const fechaNacimiento = new Date(userData.fecha_nacimiento);
+            if (isNaN(fechaNacimiento.getTime())) {
+                alert("La fecha de nacimiento es inválida.");
+                return;
+            }
+    
+            const edad = this.calcularEdad(fechaNacimiento);
+            if (edad < 7) {
+                alert("La edad no puede ser menor a 7 años.");
+                return;
+            }
+        }
         try {
-            if (!userData || typeof userData !== "object") {
-                throw new Error("Los datos del usuario son inválidos.");
-            }
-            
-            if (userData.peso !== undefined) {
-                const peso = parseFloat(userData.peso);
-                if (isNaN(peso) || peso < 15 || peso > 150) {
-                    throw new Error("El peso debe estar entre 15 kg y 150 kg.");
-                }
-            }
-            if (userData.estatura !== undefined) {
-                const estatura = parseFloat(userData.estatura);
-                if (isNaN(estatura) || estatura < 50 || estatura > 220) {
-                    throw new Error("La estatura debe ser un número positivo y mayor o igual a 50 cm.");
-                }
-            }
-            if (userData.fecha_nacimiento !== undefined) {
-                const fechaNacimiento = new Date(userData.fecha_nacimiento);
-                if (isNaN(fechaNacimiento.getTime())) {
-                    throw new Error("La fecha de nacimiento es inválida.");
-                }
-    
-                const edad = this.calcularEdad(fechaNacimiento);
-                if (edad < 7) {
-                    throw new Error("La edad no puede ser menor a 7 años.");
-                }
-            }
-
             const response = await this.axiosInstance.patch(`/users/${userId}/`, userData);
-    
             alert('Usuario actualizado con éxito.');
-    
-            return {response: response.data, success: true}; 
+            return { response: response.data, success: true };
         } catch (error) {
-            alert('Error al editar el usuario:', error.message);
+            console.error("Error al actualizar usuario:", error);
+            alert("Hubo un error al actualizar el usuario. Intenta nuevamente.");
+            return null;
         }
     }
 
@@ -154,8 +161,6 @@ class UserService {
                 descripcion: descripcionDisciplina,
             };
             const response = await this.axiosInstance.post('/disciplines/', disciplineData);
-
-            console.log('Disciplina creada:', response.data);
             this.disciplinas.push(response.data);
 
             return response.data; 
@@ -193,7 +198,6 @@ class UserService {
     async deleteDiscipline(disciplineId) {
         try {
             const response = await this.axiosInstance.delete(`/disciplines/${disciplineId}/`);
-            console.log('Disciplina eliminada:', response.data);
             this.disciplinas = this.disciplinas.filter(discipline => discipline.id !== disciplineId);
             return response.data;
         } catch (error) {

@@ -132,9 +132,14 @@
                     </svg>
                   </button>
                   <button class="btn btn-link" @click="deleteUser(user.id)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#9E0000" class="bi bi-trash3" viewBox="0 0 16 16">
-                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
-                    </svg>
+                    <div class="d-flex align-items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#9E0000" class="bi bi-trash3" viewBox="0 0 16 16">
+                          <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                      </svg>
+                      <div class="ms-3">
+                          <span v-if="loadingRows[user.id]" class="loader" style="width: 15px; height: 15px; display: inline-block;"></span>
+                      </div>
+                    </div>
                   </button>
               </td>
             </tr>
@@ -261,6 +266,7 @@ export default {
       loading: false,
       currentPage: 1,
       rowsPerPage: 10,
+      loadingRows: {},
     };
   },
   watch: {
@@ -276,6 +282,7 @@ export default {
   computed: {
     filteredUsers() {
       if (this.selectedDisciplina === 'todas') {
+        console.log(this.users.length);
         return this.users;
       }
       const disciplina = this.disciplinas.find(
@@ -289,6 +296,7 @@ export default {
     },
     paginatedData() {
       const start = (this.currentPage - 1) * this.rowsPerPage;
+      console.log(this.filteredUsers.length);
       return this.filteredUsers.slice(start, start + this.rowsPerPage);
     },
   },
@@ -301,17 +309,17 @@ export default {
     },
     async deleteUser(userId) {
       try {
-        console.log(userId);
+        this.loadingRows[userId] = true;
         const response = await axios.delete(`https://goalstats-api.onrender.com/api/users/${userId}/`, {
           headers: {
             'Content-Type': 'application/json' // Puedes mantenerlo si el servidor espera un tipo de contenido específico
           },
           withCredentials: false
         });
-        console.log("Usuario eliminado:", response.data);
 
         // Opcional: Eliminar el usuario de la lista local después de una eliminación exitosa
         if (response.status === 200 || response.status === 204) {
+          this.loadingRows[userId] = false;
           this.users = this.users.filter(user => user.id !== userId);
           console.log("Usuario eliminado:", response.data);
         } else {
@@ -330,38 +338,35 @@ export default {
       });
     },
     async updateUser() {
-      try {
-        if (!this.selectedUser || !this.selectedUser.id) {
-          alert("No se ha seleccionado un usuario válido.");
-        }
-
-        const updatedData = {
-          nombre: this.selectedUser.nombre,
-          apellido: this.selectedUser.apellido,
-          fecha_nacimiento: this.selectedUser.fecha_nacimiento,
-          peso: this.selectedUser.peso,
-          estatura: this.selectedUser.estatura,
-          nombre_disciplina: this.selectedDisciplinaNombre, 
-          role: this.selectedUser.role,
-        };
-
-        const updatedUser = await userService.editUser(this.selectedUser.id, updatedData);
-
-        if (updatedUser) {
-          this.loadAndFilterUsers();
-          const index = this.filteredUsers.findIndex(user => user.id === updatedUser.id);
-          if (index !== -1) {
-            const page = Math.floor(index / this.rowsPerPage) + 1;
-            this.currentPage = page;
-          }
-          const modal = bootstrap.Modal.getInstance(this.$refs.editUserModal);
-          modal.hide();
-        } else {
-          throw new Error("El servidor no devolvió una respuesta válida.");
-        }
-      } catch (error) {
-        console.error("Error al actualizar el usuario:", error);
+      if (!this.selectedUser || !this.selectedUser.id) {
+        alert("No se ha seleccionado un usuario válido.");
       }
+
+      const updatedData = {
+        nombre: this.selectedUser.nombre,
+        apellido: this.selectedUser.apellido,
+        fecha_nacimiento: this.selectedUser.fecha_nacimiento,
+        peso: this.selectedUser.peso,
+        estatura: this.selectedUser.estatura,
+        nombre_disciplina: this.selectedDisciplinaNombre, 
+        role: this.selectedUser.role,
+      };
+
+      const updatedUser = await userService.editUser(this.selectedUser.id, updatedData);
+
+      if (updatedUser) {
+        this.loadAndFilterUsers();
+        const index = this.filteredUsers.findIndex(user => user.id === updatedUser.id);
+        if (index !== -1) {
+          const page = Math.floor(index / this.rowsPerPage) + 1;
+          this.currentPage = page;
+        }
+        const modal = bootstrap.Modal.getInstance(this.$refs.editUserModal);
+        modal.hide();
+      } else {
+        throw new Error("El servidor no devolvió una respuesta válida.");
+      }
+      
     },
     async loadAndFilterUsers() {
       try {

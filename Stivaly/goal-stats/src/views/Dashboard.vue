@@ -60,7 +60,7 @@
                     alt="waves"
                   />
 
-                  <div class="card z-index-2">
+                  <div class="card z-index-2" style="aspect-ratio: 16/7;">
                       <BarChart
                         v-if="chartData.datasets"
                         :chartData="chartData"
@@ -79,7 +79,7 @@
     <div class="mt-4 row">
       <div class="mb-4 col-lg-12 mb-lg-0">
         <div class="card z-index-2">
-          <div class="p-3 card-body">
+          <div class="p-3 card-body" style="aspect-ratio: 16/7;">
             <reports-bar-chart
               v-if="chartData2.datasets"
               id="chart-bar"
@@ -196,14 +196,14 @@ export default {
         localStorage.removeItem('tokenExpiration');
         this.$router.push('/sign-in'); 
     }
-
-    this.totalUsers = await userService.usersCount();
-    this.totalUsersActive = await userService.usersCountByIsActive();
-    this.roleCounts = await userService.usersCountByRole();
+    const usersCount = await userService.usersCount();
+    const usersActive = await userService.usersCountByIsActive();
+    const usersRoleCount = await userService.usersCountByRole();
+    const ageGroups = await userService.distributeAgeGroups();
+    this.totalUsers = usersCount;
+    this.totalUsersActive = usersActive;
+    this.roleCounts = usersRoleCount
     console.log(this.roleCounts.SUPER_ADMIN);
-    this.intervalId = setInterval(() => {
-      console.log("refrescando")
-    }, 30000);
 
     this.chartData = {
       labels: ["SUPER ADMIN", "ADMIN", "ENTRENADOR", "DEPORTISTA"], 
@@ -215,7 +215,6 @@ export default {
       ],
       colors: ["#17c1e8", "#cb0c9f", "#82d616", "#FBC02D"],
     };
-    const ageGroups = await userService.distributeAgeGroups();
     this.chartData2 = {
       labels: Object.keys(ageGroups),
       datasets: {
