@@ -312,12 +312,10 @@ export default {
         this.loadingRows[userId] = true;
         const response = await axios.delete(`https://goalstats-api.onrender.com/api/users/${userId}/`, {
           headers: {
-            'Content-Type': 'application/json' // Puedes mantenerlo si el servidor espera un tipo de contenido específico
+            'Content-Type': 'application/json' 
           },
           withCredentials: false
         });
-
-        // Opcional: Eliminar el usuario de la lista local después de una eliminación exitosa
         if (response.status === 200 || response.status === 204) {
           this.loadingRows[userId] = false;
           this.users = this.users.filter(user => user.id !== userId);

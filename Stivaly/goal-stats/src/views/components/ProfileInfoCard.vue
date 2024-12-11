@@ -6,7 +6,7 @@
           <h6 class="mb-0">{{ title }}</h6>
         </div>
         <div class="col-md-4 text-end">
-          <a :href="action.route">
+          <a href="javascript:;" @click="toggleEdit">
             <i
               class="text-sm fas fa-user-edit text-secondary"
               data-bs-toggle="tooltip"
@@ -18,35 +18,62 @@
       </div>
     </div>
     <div class="p-3 card-body">
-      <p class="text-sm">
-        {{ description }}
-      </p>
+      <p class="text-sm">{{ description }}</p>
       <hr class="my-4 horizontal gray-light" />
       <ul class="list-group">
+        <!-- Nombre -->
         <li class="pt-0 text-sm border-0 list-group-item ps-0">
           <strong class="text-dark">Nombre:</strong> &nbsp;
-          {{ info.fullName }}
+          <span v-if="!isEditing">{{ editableInfo.nombre }}</span>
+          <input
+            v-else
+            v-model="editableInfo.nombre"
+            type="text"
+            placeholder="Nombre"
+          />
         </li>
+        <!-- Apellido -->
         <li class="text-sm border-0 list-group-item ps-0">
-          <strong class="text-dark">Teléfono:</strong> &nbsp; {{ info.mobile }}
+          <strong class="text-dark">Apellido:</strong> &nbsp;
+          <span v-if="!isEditing">{{ editableInfo.apellido }}</span>
+          <input
+            v-else
+            v-model="editableInfo.apellido"
+            type="text"
+            placeholder="Apellido"
+          />
         </li>
+        <!-- Fecha de Nacimiento -->
         <li class="text-sm border-0 list-group-item ps-0">
-          <strong class="text-dark">Correo:</strong> &nbsp; {{ info.email }}
+          <strong class="text-dark">Fecha de Nacimiento:</strong> &nbsp;
+          <span v-if="!isEditing">{{ editableInfo.fecha_nacimiento }}</span>
+          <input
+            v-else
+            v-model="editableInfo.fecha_nacimiento"
+            type="date"
+          />
         </li>
+        <!-- Peso -->
         <li class="text-sm border-0 list-group-item ps-0">
-          <strong class="text-dark">País:</strong> &nbsp;
-          {{ info.location }}
+          <strong class="text-dark">Peso:</strong> &nbsp;
+          <span v-if="!isEditing">{{ editableInfo.peso }}</span>
+          <input
+            v-else
+            v-model="editableInfo.peso"
+            type="text"
+            placeholder="Peso (kg)"
+          />
         </li>
-        <li class="pb-0 border-0 list-group-item ps-0">
-          <strong class="text-sm text-dark">Redes:</strong> &nbsp;
-          <a
-            v-for="({ icon, link }, index) of social"
-            :key="index"
-            class="py-0 mb-0 btn-simple ps-1 pe-2"
-            :href="link"
-          >
-            <font-awesome-icon :icon="icon" />
-          </a>
+        <!-- Estatura -->
+        <li class="text-sm border-0 list-group-item ps-0">
+          <strong class="text-dark">Estatura:</strong> &nbsp;
+          <span v-if="!isEditing">{{ editableInfo.estatura }}</span>
+          <input
+            v-else
+            v-model="editableInfo.estatura"
+            type="text"
+            placeholder="Estatura (cm)"
+          />
         </li>
       </ul>
     </div>
@@ -54,43 +81,55 @@
 </template>
 
 <script>
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-
 export default {
   name: "ProfileInfoCard",
-  components: {
-    FontAwesomeIcon,
-  },
   props: {
-    title: {
-      type: String,
-      default: "",
+    title: { type: String, default: "" },
+    description: { type: String, default: "" },
+    info: { type: Object, required: true },
+    social: { type: Array, default: () => [] },
+    action: { type: Object, default: () => ({ route: "javascript:;", tooltip: "Editar Perfil" }) },
+    user: {
+        type: Object,
+        required: true,
     },
-    description: {
-      type: String,
-      default: "",
+  },
+  watch: {
+    user: {
+        handler(newValue) {
+            console.log('User prop updated:', newValue);
+        },
+        deep: true,
+    },  
+  },
+
+  data() {
+    return {
+      isEditing: false,
+      editableInfo: { ...this.info }, 
+    };
+  },
+  methods: {
+    toggleEdit() {
+      if (this.isEditing) {
+        this.$emit("update-info", this.editableInfo);
+      }
+      this.isEditing = !this.isEditing;
+      if (!this.isEditing) {
+        this.editableInfo = { ...this.info }; 
+      }
     },
-    info: {
-      type: Object,
-      fullName: String,
-      mobile: String,
-      email: String,
-      location: String,
-      default: () => {},
-    },
-    social: {
-      type: Array,
-      link: String,
-      icon: String,
-      default: () => [],
-    },
-    action: {
-      type: Object,
-      route: String,
-      tooltip: String,
-      default: () => ({
-        route: "javascript:;",
-      }),
+  },
+  computed: {
+    formattedBirthDate() {
+      if (!this.editableInfo.birthDate) return "Sin fecha";
+      const date = new Date(this.editableInfo.birthDate);
+      if (isNaN(date.getTime())) return this.editableInfo.birthDate; 
+      return date.toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
     },
   },
 };

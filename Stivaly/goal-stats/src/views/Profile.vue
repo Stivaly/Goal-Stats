@@ -10,24 +10,50 @@
     >
       <span class="mask bg-gradient-primary opacity-6"></span>
     </div>
-    <div v-if="!showCreate" class="mx-4 overflow-hidden card card-body blur shadow-blur mt-n6">
-      <div class="row gx-4">
-        <div  class="col-auto">
-          <div class="col-auto my-auto">
-          <div class="w-100 text-center">
-            <h5 class="mb-1">{{ this.selectedUser.nombre }} {{ this.selectedUser.apellido }}</h5>
-            <p class="mb-0 text-md font-weight-bold">{{ this.selectedDisciplina.nombre_disciplina }}</p>
+      <div v-if="!showCreate" class="mx-4 overflow-hidden card card-body blur shadow-blur mt-n6">
+        <div class="row gx-4">
+          <div  class="col-auto" >
+            <div class="col-auto my-auto">
+            <div class="w-100 text-center">
+              <h5 class="mb-1">{{ this.selectedUser.nombre }} {{ this.selectedUser.apellido }}</h5>
+              <p class="mb-0 text-md font-weight-bold">{{ this.selectedDisciplina.nombre_disciplina }}</p>
+            </div>
+            </div>
+            <div class="py-4 container-fluid">
+              <!-- Contenedor con CSS Grid -->
+              <div class="player-info-grid">
+                <!-- Avatar -->
+                <div class="avatar-container">
+                  <div class="avatar avatar-custom position-relative">
+                    <img
+                      src="@/assets/img/3D-Player.png"
+                      alt="profile_image"
+                      class="shadow-sm h-100 border-radius-lg"
+                      style="object-position: top;"
+                    />
+                  </div>
+                </div>
+
+                <!-- Información del jugador -->
+                <div class="info-container">
+                  <profile-info-card
+                    :key="profileKey"
+                    :user="selectedUser"
+                    v-if="selectedUser.fecha_nacimiento"
+                    title="Información del Jugador"
+                    :description="`Talentoso ${this.selectedDisciplina.nombre_disciplina} conocido por su velocidad y capacidad para anticiparse a las jugadas. Comenzó su carrera en la academia juvenil de su ciudad natal, donde rápidamente destacó por su entrega en el campo y su habilidad para crear oportunidades ofensivas desde la defensa. A los 18 años, fue fichado por el equipo de segunda división FC Highlands, donde se consolidó como titular en su primera temporada y ayudó al equipo a ganar el ascenso a la primera división.`"
+                    :info="this.selectedUser"
+                    :action="{
+                      route: 'javascript:;',
+                      tooltip: isEditing ? 'Guardar' : 'Editar Perfil',
+                    }"
+                    @toggle-edit="toggleEdit"
+                    @update-info="updateUserInfo"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-          </div>
-          <div class="avatar avatar-custom position-relative">
-            <img
-              src="@/assets/img/3D-Player.png"
-              alt="profile_image"
-              class="shadow-sm h-100 border-radius-lg"
-              style="object-position: top;"
-            />
-          </div>
-        </div>
         
         
       </div>
@@ -108,6 +134,8 @@
                   step="0.01"
                   required
                   placeholder="Ej: 12.50"
+                  oninvalid="this.setCustomValidity('El campo es obligatorio.')"
+                  oninput="this.setCustomValidity('')"
                 />
               </div>
               <div class="col-md-4">
@@ -119,6 +147,8 @@
                   v-model="metric.goals_scored"
                   required
                   placeholder="Ej: 2"
+                  oninvalid="this.setCustomValidity('El campo es obligatorio.')"
+                  oninput="this.setCustomValidity('')"
                 />
               </div>
               <div class="col-md-4">
@@ -130,6 +160,8 @@
                   v-model="metric.intercepted_passes"
                   required
                   placeholder="Ej: 4"
+                  oninvalid="this.setCustomValidity('El campo es obligatorio.')"
+                  oninput="this.setCustomValidity('')"
                 />
               </div>
             </div>
@@ -143,6 +175,8 @@
                   v-model="metric.successful_passes"
                   required
                   placeholder="Ej: 30"
+                  oninvalid="this.setCustomValidity('El campo es obligatorio.')"
+                  oninput="this.setCustomValidity('')"
                 />
               </div>
               <div class="col-md-6">
@@ -168,40 +202,6 @@
     </div>
   </div>
              </div>
-  <div v-if="!showCreate" class="py-4 container-fluid">
-    <div class="mt-3 row">
-      <div class="mt-4 col-12 offset-md-3 col-md-6 offset-xl-3 col-xl-6 mt-md-0">
-        <profile-info-card
-          title="Información del Jugador"
-          description="Talentoso lateral derecho conocido por su velocidad y capacidad para anticiparse a las jugadas. Comenzó su carrera en la academia juvenil de su ciudad natal, donde rápidamente destacó por su entrega en el campo y su habilidad para crear oportunidades ofensivas desde la defensa. A los 18 años, fue fichado por el equipo de segunda división FC Highlands, donde se consolidó como titular en su primera temporada y ayudó al equipo a ganar el ascenso a la primera división."
-          :info="{
-            fullName: this.selectedUser.nombre,
-            mobile: '(44) 123 1234 123',
-            email: 'alecthompson@mail.com',
-            location: 'CHILE',
-          }"
-          :social="[
-            {
-              link: 'https://www.facebook.com/CreativeTim/',
-              icon: faFacebook,
-            },
-            {
-              link: 'https://twitter.com/creativetim',
-              icon: faTwitter,
-            },
-            {
-              link: 'https://www.instagram.com/creativetimofficial/',
-              icon: faInstagram,
-            },
-          ]"
-          :action="{
-            route: 'javascript:;',
-            tooltip: 'Edit Profile',
-          }"
-        />
-      </div>
-    </div>
-  </div>
   
 </template>
 
@@ -275,6 +275,8 @@ export default {
         { value: 'GOALKEEPER', label: 'Portero' },
       ],
       loadingRows: {},
+      isEditing: false,
+      profileKey: 0,
     };
   },
   methods:{
@@ -336,7 +338,6 @@ export default {
     },  
     async deleteMetric(metricId) {
       this.loadingRows[metricId] = true;
-      console.log('loader', this.loadingRows)
       try {
         await metricsService.deleteMetric(metricId);
         await this.loadMetrics();
@@ -347,6 +348,15 @@ export default {
         console.error("Error al eliminar la métrica:", error);
       }
     },
+    toggleEdit() {
+      this.isEditing = !this.isEditing;
+    },
+    async updateUserInfo(updatedInfo) {
+      await userService.editUser(this.selectedUser.id, updatedInfo);
+      Object.assign(this.selectedUser, updatedInfo);
+      this.profileKey += 1;
+      await this.loadMetrics();
+  }
   },
   async mounted() {
     this.$store.state.isAbsolute = true;
@@ -431,5 +441,20 @@ export default {
         87% {
           box-shadow: .2em -.2em 0 0 currentcolor;
         }
+      }
+      .player-info-grid {
+        display: grid;
+        grid-template-columns: auto 1fr; /* Avatar en la primera columna, información en la segunda */
+        gap: 20px; /* Espacio entre las columnas */
+        align-items: start; /* Alinea los elementos al inicio */
+      }
+
+      .avatar-container {
+        max-width: 200px; /* Limita el tamaño del avatar */
+      }
+
+      .info-container {
+        display: flex;
+        flex-direction: column; /* Asegura que los elementos dentro de la información se apilen */
       }
 </style>
