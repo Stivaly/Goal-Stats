@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Chequear el código
+      uses: actions/checkout@v2
+
+    - name: Configurar Git
+      run: |
+        git config --global user.name "Stivaly"
+        git config --global user.email "stivaly.g@hotmail.com"
+
+    - name: Hacer commit de la carpeta específica
+      run: |
+        cd Stivaly/goal-stats/dist
+        git init  
+        git add .  
+        git commit -m "Actualizar archivos frontend deploy"
+
+    - name: Verificar el token
+      env:
+        TARGET_REPO_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
+      run: |
+        if [ -z "$TARGET_REPO_TOKEN" ]; then
+          echo "El token no está configurado."
+          exit 1
+        else
+          echo "El token está configurado correctamente."
+        fi
+
+    - name: Sincronizar con el repositorio de destino
+      env:
+        TARGET_REPO_TOKEN: ${{ secrets.TARGET_REPO_TOKEN }}
+      run: |
+        git remote add originDeploy https://x-access-token:${TARGET_REPO_TOKEN}@github.com/Stivaly/Goal_Stats.git 
+        git push originDeploy HEAD:main --force
+      
