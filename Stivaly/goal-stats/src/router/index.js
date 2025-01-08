@@ -1,38 +1,69 @@
-import { createRouter, createWebHistory } from 'vue-router'
+
+import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
   {
-    path: '/',
-    redirect: '/register/' // Redirige la raíz al registro
+    path: "/",
+    name: "/",
+    redirect: "/dashboard",
   },
   {
-    path: '/login/',
-    name: 'Login',
-    component: () => import(/* webpackChunkName: "login" */ '../views/UserLogin.vue')
+    path: "/dashboard",
+    name: "Dashboard",
+    component: () => import('@/views/Dashboard.vue'),
+    meta: { hideNavbar: false },
   },
   {
-    path: '/register/',
-    name: 'Register',
-    component: () => import(/* webpackChunkName: "register" */ '../views/UserRegister.vue')
+    path: "/disciplinas",
+    name: "Disciplinas",
+    component: () => import('@/views/Disciplines.vue'),
+    meta: { hideNavbar: false },
   },
   {
-    path: '/dashboard/',
-    name: 'Dashboard',
-    component: () => import(/* webpackChunkName: "dashboard" */ '../views/Dashboard.vue')
+    path: "/usuarios",
+    name: "Usuarios",
+    component: () => import('@/views/Tables.vue'),
+    meta: { hideNavbar: false },
   },
   {
-    path: '/about/',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
-]
+    path: "/billing",
+    name: "Billing",
+    component: () => import('@/views/Billing.vue'),
+  },
+  {
+    path: "/virtual-reality",
+    name: "Virtual Reality",
+    component: () => import('@/views/VirtualReality.vue'),
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: () => import('@/views/Profile.vue'),
+    meta: { hideNavbar: false },
+  },
+  {
+    path: "/rtl-page",
+    name: "Rtl",
+    component: () => import('@/views/Rtl.vue'),
+  },
+  {
+    path: "/sign-in",
+    name: "Sign In",
+    component: () => import('@/views/SignIn.vue'),
+    meta: { hideNavbar: true },
+  },
+  {
+    path: "/sign-up",
+    name: "Sign Up",
+    component: () => import('@/views/SignUp.vue'),
+    meta: { hideNavbar: true },
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
-  routes
-})
+  routes,
+  linkActiveClass: "active",
+});
 
-export default router
+export default router;
