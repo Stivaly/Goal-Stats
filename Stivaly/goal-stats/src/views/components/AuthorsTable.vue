@@ -308,6 +308,16 @@ export default {
       return this.roleStyles[role]?.img;
     },
     async deleteUser(userId) {
+      const currentUsername = localStorage.getItem('username'); 
+      const currentUser = this.users.find(user => user.username === currentUsername);
+
+      if (currentUser && currentUser.id === userId) {
+        alert('No puedes eliminar tu propia cuenta mientras estás logueado.');
+        return; 
+      }
+
+      const confirmDelete = confirm(`¿Estás seguro de eliminar el usuario?`);
+      if (!confirmDelete) return;
       try {
         this.loadingRows[userId] = true;
         const response = await axios.delete(`https://goalstats-api.onrender.com/api/users/${userId}/`, {

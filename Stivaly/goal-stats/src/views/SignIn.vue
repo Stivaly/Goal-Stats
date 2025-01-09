@@ -16,7 +16,10 @@
                   <h3 class="font-weight-bolder text-primary text-gradient">
                     Bienvenido de Vuelta
                   </h3>
-                  <p class="mb-0">Ingresa tu usuario y contraseña para inciar sesión</p>
+                  <p class="mb-0">Ingresa tu usuario y contraseña para inciar sesión
+                  <br>
+                  Cuenta Demo: demo@demo.com / Demo!123
+                  </p>
                 </div>
                 <div class="card-body">
                   <form role="form" class="text-start">
@@ -180,7 +183,7 @@ export default {
         const expiration = localStorage.getItem('tokenExpiration');
         if (!expiration) return true;
         const now = new Date();
-        return now > new Date(expiration); // Retorna true si ya expiró
+        return now > new Date(expiration);
       },
   },
 };
