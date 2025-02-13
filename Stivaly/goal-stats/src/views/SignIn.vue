@@ -18,7 +18,7 @@
                   </h3>
                   <p class="mb-0">Ingresa tu usuario y contraseña para inciar sesión
                   <br>
-                  Cuenta Demo: demo@demo.com / Demo!123
+                  Cuenta Demo: cuenta_demo / Demo!123
                   </p>
                 </div>
                 <div class="card-body">
